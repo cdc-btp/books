@@ -1,0 +1,37 @@
+{
+  "name": "books",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^8",
+    "@sap/xssec": "^4",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.7.0",
+    "@cap-js/sqlite": "^1.7.8",
+    "@sap/cds-dk": "^8"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy user-mngr --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rm -rf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+  },
+  "sapux": [
+    "app/admin-books",
+    "app/browse"
+  ],
+  "cds": {
+    "requires": {
+      "auth": "xsuaa",
+      "html5-repo": true,
+      "destinations": true,
+      "workzone": true
+    }
+  }
+}

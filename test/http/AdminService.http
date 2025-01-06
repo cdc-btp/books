@@ -1,0 +1,161 @@
+@server = https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com
+@auth = Authorization: Basic alice:
+
+
+### Books
+# @name Books_GET
+GET {{server}}/odata/v4/admin/Books
+Authorization: Basic sb-cloned243df1a8c1f45b686fa76e724498637!b89241|destination-xsappname!b2:efb783c8-9d00-42a4-9040-bb2b19e3cd90$0tEaR-xrH0mZ7vAnZJubVkC9V0roS-ZUdTEPaVHNZNA=
+
+
+### Books Drafts GET
+# @name Books_Drafts_GET
+GET {{server}}/odata/v4/admin/Books?$filter=(IsActiveEntity eq false)
+{{auth}}
+
+
+### Books Draft POST
+# @name Books_Draft_POST
+POST {{server}}/odata/v4/admin/Books
+Content-Type: application/json
+{{auth}}
+
+{
+  "title": "title-8602489",
+  "descr": "descr-8602489",
+  "author": {
+    "ID": 17748388
+  },
+  "genre": {
+    "ID": 24595142
+  },
+  "stock": 46,
+  "price": 39.22,
+  "currency": {
+    "code": "525"
+  },
+  "createdAt": "2011-10-10T22:00:00.000Z",
+  "createdBy": "createdBy.54dq1@example.org",
+  "modifiedAt": "2016-01-31T22:00:00.000Z",
+  "modifiedBy": "modifiedBy.54dq1@example.com"
+}
+
+
+### Result from POST request above
+@draftID = {{Books_Draft_POST.response.body.$.ID}}
+
+
+### Books Draft PATCH
+# @name Books_Draft_Patch
+PATCH {{server}}/odata/v4/admin/Books(ID={{draftID}},IsActiveEntity=false)
+Content-Type: application/json
+{{auth}}
+
+{
+  "title": "title-8602489",
+  "descr": "descr-8602489",
+  "author": {
+    "ID": 17748388
+  },
+  "genre": {
+    "ID": 24595142
+  },
+  "stock": 46,
+  "price": 39.22,
+  "currency": {
+    "code": "525"
+  },
+  "createdAt": "2011-10-10T22:00:00.000Z",
+  "createdBy": "createdBy.54dq1@example.org",
+  "modifiedAt": "2016-01-31T22:00:00.000Z",
+  "modifiedBy": "modifiedBy.54dq1@example.com"
+}
+
+
+### Books Draft Prepare
+# @name Books_Draft_Prepare
+POST {{server}}/odata/v4/admin/Books(ID={{draftID}},IsActiveEntity=false)/AdminService.draftPrepare
+Content-Type: application/json
+{{auth}}
+
+{}
+
+
+### Books Draft Activate
+# @name Books_Draft_Activate
+POST {{server}}/odata/v4/admin/Books(ID={{draftID}},IsActiveEntity=false)/AdminService.draftActivate
+Content-Type: application/json
+{{auth}}
+
+{}
+
+
+### Authors
+# @name Authors_GET
+GET {{server}}/odata/v4/admin/Authors
+{{auth}}
+
+
+### Authors
+# @name Authors_POST
+POST {{server}}/odata/v4/admin/Authors
+Content-Type: application/json
+{{auth}}
+
+{
+  "ID": 17748388,
+  "name": "name-17748388",
+  "dateOfBirth": "2017-10-08",
+  "dateOfDeath": "2005-09-10",
+  "placeOfBirth": "placeOfBirth-17748388",
+  "placeOfDeath": "placeOfDeath-17748388",
+  "createdAt": "2004-12-15T22:00:00.000Z",
+  "createdBy": "createdBy.akeqs@example.com",
+  "modifiedAt": "2001-10-21T22:00:00.000Z",
+  "modifiedBy": "modifiedBy.akeqs@example.com"
+}
+
+
+### Authors
+# @name Authors_PATCH
+PATCH {{server}}/odata/v4/admin/Authors/17748388
+Content-Type: application/json
+{{auth}}
+
+{
+  "ID": 17748388,
+  "name": "name-17748388",
+  "dateOfBirth": "2017-10-08",
+  "dateOfDeath": "2005-09-10",
+  "placeOfBirth": "placeOfBirth-17748388",
+  "placeOfDeath": "placeOfDeath-17748388",
+  "createdAt": "2004-12-15T22:00:00.000Z",
+  "createdBy": "createdBy.akeqs@example.com",
+  "modifiedAt": "2001-10-21T22:00:00.000Z",
+  "modifiedBy": "modifiedBy.akeqs@example.com"
+}
+
+
+### Authors
+# @name Authors_DELETE
+DELETE {{server}}/odata/v4/admin/Authors/17748388
+Content-Type: application/json
+{{auth}}
+
+
+### Languages
+# @name Languages_GET
+GET {{server}}/odata/v4/admin/Languages
+{{auth}}
+
+
+### Genres
+# @name Genres_GET
+GET {{server}}/odata/v4/admin/Genres
+{{auth}}
+
+
+### Currencies
+# @name Currencies_GET
+GET {{server}}/odata/v4/admin/Currencies
+{{auth}}
