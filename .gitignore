@@ -35,3 +35,6 @@ mta_archives/
 
 
 dist
+logs
+.idea
+Makefile_*

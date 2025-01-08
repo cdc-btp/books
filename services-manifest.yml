@@ -2,6 +2,6 @@
 # appName = books
 ---
 create-services:
-  - name: books-db
+  - name: books-hana
     broker: hana
     plan: hdi-shared

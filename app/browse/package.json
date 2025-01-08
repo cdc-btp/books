@@ -1,5 +1,6 @@
 {
   "name": "browse",
+
   "version": "1.0.0",
   "main": "webapp/index.html",
   "scripts": {

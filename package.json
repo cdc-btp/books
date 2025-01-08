@@ -6,9 +6,15 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@cap-js/telemetry": ">=0",
+    "@grpc/grpc-js": "^1",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "^0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0",
+    "@opentelemetry/host-metrics": "^0",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
-    "express": "^4"
+    "express": "^4",
+    "@cap-js/hana": "^1"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.7.0",
@@ -17,8 +23,9 @@
   },
   "scripts": {
     "start": "cds-serve",
+    "start:hybrid": "cds-serve --hybrid",
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
-    "undeploy": "cf undeploy user-mngr --delete-services --delete-service-keys --delete-service-brokers",
+    "undeploy": "cf undeploy books --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
@@ -28,10 +35,44 @@
   ],
   "cds": {
     "requires": {
-      "auth": "xsuaa",
       "html5-repo": true,
       "destinations": true,
-      "workzone": true
+      "workzone": true,
+      "[development]": {
+        "auth": {
+          "strategy": "mock",
+          "users": {
+            "john": {
+              "roles": [
+                "UserAdmin"
+              ]
+            }
+          }
+        }
+      },
+      "[production]": {
+        "auth": "xsuaa",
+        "telemetry": {
+          "kind": "to-cloud-logging"
+        },
+        "db": "hana"
+      },
+      "[hybrid]": {
+        "db": "hana",
+        "auth": {
+          "strategy": "mock",
+          "users": {
+            "john": {
+              "roles": [
+                "UserAdmin"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sql": {
+      "native_hana_associations": false
     }
   }
 }

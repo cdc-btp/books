@@ -26,17 +26,18 @@ modules:
         properties:
           srv-url: ${default-url}
     requires:
-      - name: books-db
+      - name: books-hana
       - name: books-auth
       - name: books-destination
+      - name: books-cloud-logging
 
-  - name: books-db-deployer
+  - name: books-hana-deployer
     type: hdb
     path: gen/db
     parameters:
       buildpack: nodejs_buildpack
     requires:
-      - name: books-db
+      - name: books-hana
 
   - name: books-app-deployer
     type: com.sap.application.content
@@ -115,7 +116,7 @@ modules:
               sap.cloud.service: books.service
 
 resources:
-  - name: books-db
+  - name: books-hana
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
@@ -164,3 +165,11 @@ resources:
           name: srv-api # must be used in xs-app.json as well
           url: ~{srv-url}
           forwardAuthToken: true
+  - name: books-cloud-logging
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: cloud-logging
+      service-plan: standard
+      config:
+        ingest_otlp:
+          enabled: true
