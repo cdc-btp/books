@@ -12,9 +12,28 @@ build-parameters:
         - npm ci
         - npx cds build --production
 modules:
+  - name: books-ams-policies-deployer
+    type: javascript.nodejs
+    path: gen/policies
+    parameters:
+      buildpack: nodejs_buildpack
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-dcl
+          command: npm start
+          memory: 512M
+    requires:
+      - name: books-auth
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+            app-identifier: policy-deployer 
   - name: books-srv
     type: nodejs
     path: gen/srv
+    properties:
+      AMS_DCL_ROOT: ams/dcl
     parameters:
       buildpack: nodejs_buildpack
       readiness-health-check-type: http
@@ -24,10 +43,15 @@ modules:
     provides:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
-          srv-url: ${default-url}
+          srv-url: ${default-url},
+          AMS_DCL_ROOT: ams/dcl
     requires:
       - name: books-hana
       - name: books-auth
+        parameters:
+          config:
+            credential-type: "X509_GENERATED"
+
       - name: books-destination
       - name: books-cloud-logging
 
@@ -86,10 +110,6 @@ modules:
   - name: books-destinations
     type: com.sap.application.content
     requires:
-      - name: books-auth
-        parameters:
-          service-key:
-            name: books-auth-key
       - name: books-html5-repo-host
         parameters:
           service-key:
@@ -109,11 +129,6 @@ modules:
               ServiceInstanceName: books-html5-repo-host
               ServiceKeyName: books-html5-repo-host-key
               sap.cloud.service: books.service
-            - Name: books-auth
-              Authentication: OAuth2UserTokenExchange
-              ServiceInstanceName: books-auth
-              ServiceKeyName: books-auth-key
-              sap.cloud.service: books.service
 
 resources:
   - name: books-hana
@@ -124,12 +139,9 @@ resources:
   - name: books-auth
     type: org.cloudfoundry.managed-service
     parameters:
-      service: xsuaa
+      path: ./ias-config.json
       service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: books-${org}-${space}
-        tenant-mode: dedicated
+      service: identity
   - name: books-html5-repo-host
     type: org.cloudfoundry.managed-service
     parameters:
@@ -153,6 +165,7 @@ resources:
                 ProxyType: Internet
                 HTML5.ForwardAuthToken: true
                 HTML5.DynamicDestination: true
+                HTML5.IASDependencyName: books-api
               - Name: ui5
                 URL: https://ui5.sap.com
                 Authentication: NoAuthentication
@@ -173,3 +186,4 @@ resources:
       config:
         ingest_otlp:
           enabled: true
+  

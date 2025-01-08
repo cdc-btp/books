@@ -6,19 +6,21 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@cap-js/hana": "^1",
     "@cap-js/telemetry": ">=0",
     "@grpc/grpc-js": "^1",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0",
     "@opentelemetry/host-metrics": "^0",
+    "@sap/ams": "^2.0.0",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
-    "express": "^4",
-    "@cap-js/hana": "^1"
+    "express": "^4"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.7.0",
     "@cap-js/sqlite": "^1.7.8",
+    "@sap/ams-dev": "^2.0.0",
     "@sap/cds-dk": "^8"
   },
   "scripts": {
@@ -27,7 +29,9 @@
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy books --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "build:security": "cds compile srv --to xsuaa > xs-security.json",
+    "debug":"DEBUG=ams,ams-dev cds w"
   },
   "sapux": [
     "app/admin-books",
@@ -38,20 +42,36 @@
       "html5-repo": true,
       "destinations": true,
       "workzone": true,
+      "auth":{
+        "ams" : {
+          "autoCompile" : true,
+          "cache" : {
+            "TTL" : 0
+          }
+        }
+      },
       "[development]": {
         "auth": {
-          "strategy": "mock",
+          "strategy": "mock", 
           "users": {
             "john": {
               "roles": [
                 "UserAdmin"
+              ]
+            },
+            "alice": {
+              "policies" : [
+                "cap.admin"
               ]
             }
           }
         }
       },
       "[production]": {
-        "auth": "xsuaa",
+        "auth": {
+          "kind": "ias"
+        },
+
         "telemetry": {
           "kind": "to-cloud-logging"
         },
@@ -61,6 +81,12 @@
         "db": "hana",
         "auth": {
           "strategy": "mock",
+          "ams" : {
+            "autoCompile" : true,
+            "cache" : {
+              "TTL" : 0
+            }
+          },
           "users": {
             "john": {
               "roles": [

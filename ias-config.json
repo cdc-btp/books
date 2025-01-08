@@ -1,0 +1,13 @@
+{
+
+  "authorization": {
+    "enabled":true
+  },
+  "provided-apis": [
+    {
+      "name": "books-api",
+      "description": "api exposed by books app"
+    }
+  ],
+  "display-name": "books-ias-config"
+}
