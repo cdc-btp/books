@@ -1,7 +1,9 @@
 {
 
   "authorization": {
-    "enabled":true
+    "enabled": true,
+    "value_help_url": "https://vhp-srv-develop.cert.cfapps.sap.hana.ondemand.com/odata/v4/ValueHelpService/",
+    "show_in_consuming_app": true
   },
   "provided-apis": [
     {

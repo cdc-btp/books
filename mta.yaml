@@ -28,7 +28,7 @@ modules:
         parameters:
           config:
             credential-type: X509_GENERATED
-            app-identifier: policy-deployer 
+            app-identifier: policy-deployer
   - name: books-srv
     type: nodejs
     path: gen/srv
@@ -186,4 +186,3 @@ resources:
       config:
         ingest_otlp:
           enabled: true
-  

@@ -1,5 +1,8 @@
 using { sap.capire.bookshop as my } from '../db/schema';
-service CatalogService {
+
+
+service CatalogService @(requires: 'authenticated-user'){
+
 
   /** For displaying lists of Books */
   @readonly entity ListOfBooks as projection on Books
