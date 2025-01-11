@@ -24,7 +24,7 @@ modules:
           command: npm start
           memory: 512M
     requires:
-      - name: books-auth
+      - name: ams-books-ias
         parameters:
           config:
             credential-type: X509_GENERATED
@@ -43,17 +43,17 @@ modules:
     provides:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
-          srv-url: ${default-url},
+          srv-url: ${default-url}
           AMS_DCL_ROOT: ams/dcl
     requires:
       - name: books-hana
-      - name: books-auth
+      - name: ams-books-ias
         parameters:
           config:
-            credential-type: "X509_GENERATED"
-
+            credential-type: X509_GENERATED
       - name: books-destination
       - name: books-cloud-logging
+      - name: books-conn
 
   - name: books-hana-deployer
     type: hdb
@@ -123,12 +123,12 @@ modules:
     parameters:
       content:
         instance:
-          existing_destinations_policy: update
+          existing_destinations_policy: ignore
           destinations:
             - Name: books-html5-repository
               ServiceInstanceName: books-html5-repo-host
               ServiceKeyName: books-html5-repo-host-key
-              sap.cloud.service: books.service
+              sap.cloud.service: books
 
 resources:
   - name: books-hana
@@ -136,12 +136,13 @@ resources:
     parameters:
       service: hana
       service-plan: hdi-shared
-  - name: books-auth
+  - name: ams-books-ias
     type: org.cloudfoundry.managed-service
     parameters:
       path: ./ias-config.json
       service-plan: application
       service: identity
+      service-name: ams-books-ias
   - name: books-html5-repo-host
     type: org.cloudfoundry.managed-service
     parameters:
@@ -163,9 +164,8 @@ resources:
                 Authentication: NoAuthentication
                 Type: HTTP
                 ProxyType: Internet
-                HTML5.ForwardAuthToken: true
-                HTML5.DynamicDestination: true
                 HTML5.IASDependencyName: books-api
+                HTML5.DynamicDestination: true
               - Name: ui5
                 URL: https://ui5.sap.com
                 Authentication: NoAuthentication
@@ -186,3 +186,12 @@ resources:
       config:
         ingest_otlp:
           enabled: true
+          
+  - name: books-conn
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service-plan: lite
+      service: connectivity
+      service-name: books-conn
+      service-keys:
+        - name: books-conn-key
