@@ -7,11 +7,15 @@ service CatalogService @(requires: 'authenticated-user'){
   /** For displaying lists of Books */
   @readonly entity ListOfBooks as projection on Books
   excluding { descr };
+ 
 
   /** For display in details pages */
   @readonly entity Books as projection on my.Books { *,
     author.name as author
-  } excluding { createdBy, modifiedBy };
+  } excluding {  modifiedBy };
+
+  /** For display in details pages */
+  @readonly entity MyBooks @(restrict : [  { grant: 'READ', where: 'createdBy = $user' } ]) as projection on Books { * } ;
 
   @requires: 'authenticated-user'
   action submitOrder (
