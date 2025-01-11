@@ -24,16 +24,19 @@
     "@sap/cds-dk": "^8"
   },
   "scripts": {
+    "publish": "npm run build && npm run deploy",
     "start": "cds-serve",
-    "start:hybrid": "cds-serve --hybrid",
+    "start:hybrid": "cds serve --profile hybrid --resolve-bindings",
+    "bind:hybrid": "cds bind --profile hybrid  --exec 'npm start --prefix app'",
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy books --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "deploy": "cf deploy mta_archives/archive.mtar --delete-services --delete-service-keys  --delete-service-brokers --retries 1 ",
     "build:security": "cds compile srv --to xsuaa > xs-security.json",
     "debug": "DEBUG=ams,ams-dev cds w",
     "build:ams": "cds build --for ams",
-    "build:dcl": "compile-dcl --dcl ams/dcl -o gen/ams/dcn"
+    "build:dcl": "compile-dcl --dcl ams/dcl -o gen/ams/dcn",
+    "deploy:hana": "cds build --for hana && cds deploy --to hana:books-hana"
   },
   "sapux": [
     "app/admin-books",
@@ -47,9 +50,10 @@
       "auth": {
         "ams": {
           "autoCompile": true,
+          "autoDeploy": true,
           "cache": {
             "TTL": 0
-          }
+          } 
         },
         "users": {
           "dave": {
@@ -114,9 +118,8 @@
         "db": "hana"
       },
       "[hybrid]": {
-        "db": "hana",
         "auth": {
-          "strategy": "mock"
+          "kind": "ias" 
         }
       }
     },
