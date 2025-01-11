@@ -1,8 +1,8 @@
 {
-
+  "display-name": "Books Identity",
   "authorization": {
     "enabled": true,
-    "value_help_url": "https://vhp-srv-develop.cert.cfapps.sap.hana.ondemand.com/odata/v4/ValueHelpService/",
+    "value_help_url": "https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com/odata/v4/ValueHelpService/",
     "show_in_consuming_app": true
   },
   "provided-apis": [
@@ -11,5 +11,23 @@
       "description": "api exposed by books app"
     }
   ],
-  "display-name": "books-ias-config"
+  "oauth2-configuration": {
+    "public-client": true,
+    "grant-types": ["authorization_code"],
+    "credential-types": ["binding-secret", "x509"],
+
+    "redirect-uris": [
+      "https://*.cfapps.eu20.hana.ondemand.com/login/callback?authType=ias",
+      "https://*.cfapps.eu20-001.hana.ondemand.com/login/callback?authType=ias",
+      "http://localhost:4004/login/callback"
+    ],  
+    "post-logout-redirect-uris": [
+      "https://*.cfapps.eu20.hana.ondemand.com/*/logout.html" ,
+      "https://*.cfapps.eu20-001.hana.ondemand.com/*/logout.html"
+    ]  
+  },
+  "xsuaa-cross-consumption":true,
+  "multi-tenant":false
+
+
 }
