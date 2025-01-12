@@ -1,6 +1,5 @@
 {
   "name": "browse",
-
   "version": "1.0.0",
   "main": "webapp/index.html",
   "scripts": {
@@ -10,10 +9,12 @@
   },
   "devDependencies": {
     "@ui5/cli": "^4",
-    "ui5-task-zipper": "^3"
+    "ui5-task-zipper": "^3",
+    "@sap/ui5-builder-webide-extension": "^1.1.9"
   },
   "ui5": {
     "dependencies": [
+      "@sap/ui5-builder-webide-extension",
       "ui5-task-zipper"
     ]
   }

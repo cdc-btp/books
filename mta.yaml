@@ -11,6 +11,9 @@ build-parameters:
       commands:
         - npm ci
         - npx cds build --production
+        - mkdir -p resources
+        - cp workzone/cdm.json resources/cdm.json
+
 modules:
   - name: books-ams-policies-deployer
     type: javascript.nodejs
@@ -106,8 +109,9 @@ modules:
         - npm ci
       supported-platforms:
         []
-
+  # ------------------ DESTINATION CONTENT ---------------------
   - name: books-destinations
+ # ------------------------------------------------------------
     type: com.sap.application.content
     requires:
       - name: books-html5-repo-host
@@ -117,39 +121,87 @@ modules:
       - name: srv-api
       - name: books-destination
         parameters:
-          content-target: true
+          content-target: true 
     build-parameters:
       no-source: true
     parameters:
       content:
+#        subaccount:
+#          existing_destinations_policy: update
+#          destinations:
+#            - Name: books_cdm
+#              ServiceInstanceName: books-html5-runtime-service
+#              ServiceKeyName: books-html5-runtime-service-key
+#              URL: https://html5-apps-repo-rt.${default-domain}/applications/cdm/books.service
         instance:
-          existing_destinations_policy: ignore
+          existing_destinations_policy: update
           destinations:
             - Name: books-html5-repository
               ServiceInstanceName: books-html5-repo-host
               ServiceKeyName: books-html5-repo-host-key
-              sap.cloud.service: books
+              sap.cloud.service: books.service
+
+  - name: books
+    type: approuter.nodejs
+    path: app/router
+    parameters:
+      keep-existing-routes: true
+      disk-quota: 256M
+      memory: 256M
+    requires:
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api # must be used in xs-app.json as well
+          url: ~{srv-url}
+          forwardAuthToken: true
+      - name: books-cloud-logging
+      - name: books-destination
+      - name: books-conn
+      - name: ams-books-ias
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+
 
 resources:
+# ------------------------------------------------------------
   - name: books-hana
+# ------------------------------------------------------------
     type: com.sap.xs.hdi-container
     parameters:
       service: hana
       service-plan: hdi-shared
+# ------------------------------------------------------------
   - name: ams-books-ias
+# ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
       path: ./ias-config.json
       service-plan: application
       service: identity
       service-name: ams-books-ias
+# ------------------------------------------------------------
   - name: books-html5-repo-host
+# ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
       service: html5-apps-repo
       service-plan: app-host
-  - name: books-destination
+# ------------------------------------------------------------
+  - name: books-html5-runtime
+# ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+      service-name: books-html5-runtime-service
+# ------------------------------------------------------------
+  - name: books-destination
+# ------------------------------------------------------------
+    type: org.cloudfoundry.managed-service
+    requires:
+      - name: srv-api
     parameters:
       service: destination
       service-plan: lite
@@ -159,25 +211,21 @@ resources:
           instance:
             existing_destinations_policy: update
             destinations:
-              - Name: books-srv-api
+              - Name: books-srv
                 URL: ~{srv-api/srv-url}
                 Authentication: NoAuthentication
                 Type: HTTP
                 ProxyType: Internet
                 HTML5.IASDependencyName: books-api
                 HTML5.DynamicDestination: true
+                HTML5.ForwardAuthToken: true
               - Name: ui5
                 URL: https://ui5.sap.com
                 Authentication: NoAuthentication
                 Type: HTTP
                 ProxyType: Internet
-    requires:
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api # must be used in xs-app.json as well
-          url: ~{srv-url}
-          forwardAuthToken: true
+  # ------------------------------------------------------------
+
   - name: books-cloud-logging
     type: org.cloudfoundry.managed-service
     parameters:
@@ -186,7 +234,7 @@ resources:
       config:
         ingest_otlp:
           enabled: true
-          
+
   - name: books-conn
     type: org.cloudfoundry.managed-service
     parameters:
@@ -195,3 +243,48 @@ resources:
       service-name: books-conn
       service-keys:
         - name: books-conn-key
+
+#
+#  - name: books-rt-destination
+#    # ------------------------------------------------------------
+#
+#    type: org.cloudfoundry.managed-service
+#    parameters:
+#      service: destination
+#      service-plan: lite
+#      config:
+#        init_data:
+#          subaccount:
+#            existing_destinations_policy: update
+#            destinations:
+#              - Authentication: NoAuthentication
+#                Name: books-rt
+#                ProxyType: Internet
+#                Type: HTTP
+#                URL: https://amsi.launchpad.${default-domain}
+#                CEP.HTML5contentprovider: true
+#                HTML5.IASDependencyName: books-api
+#          instance:
+#            existing_destinations_policy: update
+#            destinations:
+#              - Name: books-srv-rt
+#                URL: ~{srv-api/srv-url}
+#                Authentication: NoAuthentication
+#                Type: HTTP
+#                ProxyType: Internet
+#                HTML5.ForwardAuthToken: true
+#                HTML5.DynamicDestination: true
+#                HTML5.IASDependencyName: books-api
+#              - Name: ui5
+#                URL: https://ui5.sap.com
+#                Authentication: NoAuthentication
+#                Type: HTTP
+#                ProxyType: Internet
+#        HTML5Runtime_enabled: true
+#    requires:
+#      - name: srv-api
+#        group: destinations
+#        properties:
+#          name: srv-api # must be used in xs-app.json as well
+#          url: ~{srv-url}
+#          forwardAuthToken: true

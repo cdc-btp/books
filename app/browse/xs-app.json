@@ -5,7 +5,7 @@
     {
       "source": "^/?odata/(.*)$",
       "target": "/odata/$1",
-      "destination": "books-srv-api",
+      "destination": "srv-api",
       "authenticationType": "ias",
       "csrfProtection": false
     },
@@ -21,12 +21,20 @@
       "authenticationType": "none",
       "destination": "ui5"
     },
+    ,{
+      "source": "^/user-api(.*)",
+      "target": "$1",
+      "service": "sap-approuter-userapi"
+    }, {
+      "source": "^/user-api/currentUser$",
+      "target": "/currentUser",
+      "service": "sap-approuter-userapi"
+    },
     {
       "source": "^(.*)$",
       "target": "$1",
       "service": "html5-apps-repo-rt",
       "authenticationType": "ias"
     }
-    
   ]
 }

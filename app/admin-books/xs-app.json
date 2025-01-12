@@ -4,14 +4,14 @@
     {
       "source": "^/?odata/(.*)$",
       "target": "/odata/$1",
-      "destination": "books-srv-api",
+      "destination": "srv-api",
       "authenticationType": "ias",
       "csrfProtection": false
     },
     {
       "source": "^/odata/(.*)$",
       "target": "/odata/$1",
-      "destination": "books-srv-api",
+      "destination": "srv-api",
       "authenticationType": "ias",
       "csrfProtection": false
     },

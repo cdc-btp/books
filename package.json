@@ -26,8 +26,9 @@
   "scripts": {
     "publish": "npm run build && npm run deploy",
     "start": "cds-serve",
+    "start:router": "PORT=4005 cds bind --exec -- npm start --prefix app/router",
     "start:hybrid": "cds serve --profile hybrid --resolve-bindings",
-    "bind:hybrid": "cds bind --profile hybrid  --exec 'npm start --prefix app'",
+    "start:admin": "DEBUG=ams cds bind  --exec -- npm start ",
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy books --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
@@ -53,7 +54,7 @@
           "autoDeploy": true,
           "cache": {
             "TTL": 0
-          } 
+          }
         },
         "users": {
           "dave": {
@@ -80,7 +81,6 @@
               "name": "fred",
               "birthdate": "1980-03-22",
               "age": 41
-
             }
           },
           "bob": {
@@ -92,7 +92,6 @@
               "name": "bob",
               "birthdate": "2012-03-22",
               "age": 9
-
             }
           },
           "alice": {
@@ -105,7 +104,6 @@
       "[development]": {
         "auth": {
           "strategy": "mock"
-
         }
       },
       "[production]": {
@@ -119,7 +117,7 @@
       },
       "[hybrid]": {
         "auth": {
-          "kind": "ias" 
+          "kind": "ias"
         }
       }
     },

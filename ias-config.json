@@ -13,13 +13,14 @@
   ],
   "oauth2-configuration": {
     "public-client": true,
-    "grant-types": ["authorization_code"],
+    "grant-types": ["authorization_code", "client_credentials", "refresh_token", "id_token"],
     "credential-types": ["binding-secret", "x509"],
 
     "redirect-uris": [
       "https://*.cfapps.eu20.hana.ondemand.com/login/callback?authType=ias",
       "https://*.cfapps.eu20-001.hana.ondemand.com/login/callback?authType=ias",
-      "http://localhost:4004/login/callback"
+      "http://localhost:4004/login/callback",
+      "http://localhost:4005/login/callback"
     ],  
     "post-logout-redirect-uris": [
       "https://*.cfapps.eu20.hana.ondemand.com/*/logout.html" ,
