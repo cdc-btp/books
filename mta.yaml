@@ -181,6 +181,7 @@ resources:
       service-plan: application
       service: identity
       service-name: ams-books-ias
+#      grant_type: , "authorization_code_pkce_s256"
 # ------------------------------------------------------------
   - name: books-html5-repo-host
 # ------------------------------------------------------------
