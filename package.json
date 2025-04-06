@@ -15,7 +15,8 @@
     "@sap/ams": "^2.0.0",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
-    "express": "^4"
+    "express": "^4",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.7.0",
@@ -24,17 +25,17 @@
     "@sap/cds-dk": "^8"
   },
   "scripts": {
-    "publish": "npm run build && npm run deploy",
+    "cf:publish": "npm run build && npm run deploy",
     "start": "cds-serve",
     "start:router": "PORT=4005 cds bind --exec -- npm start --prefix app/router",
     "start:hybrid": "cds serve --profile hybrid --resolve-bindings",
     "start:admin": "DEBUG=ams cds bind  --exec -- npm start ",
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
-    "undeploy": "cf undeploy books --delete-services --delete-service-keys --delete-service-brokers",
+    "undeploy": "cf undeploy incidentsu --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase -m books ",
+    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase --delete-services --delete-service-keys --delete-service-brokers",
     "build:security": "cds compile srv --to xsuaa > xs-security.json",
-    "delete-flags":"--delete-services --delete-service-keys  --delete-service-brokers",
+    "delete-flags": "--delete-services --delete-service-keys  --delete-service-brokers",
     "debug": "DEBUG=ams,ams-dev cds w",
     "build:ams": "cds build --for ams",
     "build:dcl": "compile-dcl --dcl ams/dcl -o gen/ams/dcn",
@@ -114,7 +115,9 @@
         "telemetry": {
           "kind": "to-cloud-logging"
         },
-        "db": "hana"
+        "db": {
+          "kind": "sqlite"
+        }
       },
       "[hybrid]": {
         "auth": {
