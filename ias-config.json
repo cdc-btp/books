@@ -1,5 +1,6 @@
-{
-  "display-name": "Books Identity",
+{       
+
+  "display-name": "Books Identity (${org}-${space})`",
   "authorization": {
     "enabled": true,
     "value_help_url": "https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com/odata/v4/ValueHelpService/",
@@ -12,8 +13,8 @@
     }
   ],
   "subject-name-identifier": {
-    "attribute": "userUuid",
-    "fallback-attribute": "uid"
+    "attribute": "email",
+    "fallback-attribute": "Email"
   },
 
   "oauth2-configuration": {

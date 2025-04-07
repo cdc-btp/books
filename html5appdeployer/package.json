@@ -1,0 +1,12 @@
+{
+  "name": "approuter-html5appdeployer",
+  "engines": {
+    "node": "^12.0.0"
+  },
+  "dependencies": {
+    "@sap/html5-app-deployer": "6.4.3"
+  },
+  "scripts": {
+    "start": "node node_modules/@sap/html5-app-deployer/index.js"
+  }
+}

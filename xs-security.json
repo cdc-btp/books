@@ -1,4 +1,5 @@
 {
+  "xsappname": "books-uaa-${org}-${space}",
   "scopes": [
     {
       "name": "$XSAPPNAME.Member",
@@ -9,7 +10,7 @@
       "description": "Member"
     },
     {
-      "name": "$XSAPPNAME.admin",
+      "name": "$XSAPPNAME.Admin",
       "description": "Admin"
     }
   ],
@@ -35,7 +36,7 @@
       "name": "Admin",
       "description": "generated",
       "scope-references": [
-        "$XSAPPNAME.admin"
+        "$XSAPPNAME.Admin"
       ],
       "attribute-references": []
     },

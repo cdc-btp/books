@@ -116,7 +116,7 @@
           "kind": "to-cloud-logging"
         },
         "db": {
-          "kind": "sqlite"
+          "kind": "hana"
         }
       },
       "[hybrid]": {

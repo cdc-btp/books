@@ -1,5 +1,6 @@
-@server = https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com
+#@server = https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com
 @auth = Authorization: Basic alice:
+@server = https://ams-books-books-srv.cfapps.eu20-001.hana.ondemand.com
 
 
 ### Books

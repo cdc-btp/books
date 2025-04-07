@@ -162,10 +162,10 @@ modules:
       - name: books-cloud-logging
       - name: books-destination
       - name: html5_repo_runtime
-      - name: books-uaa
-        parameters: 
-          service-key:
-            name: books-uaa-key
+#      - name: books-uaa
+#        parameters: 
+#          service-key:
+#            name: books-uaa-key
 
       - name: ams-books-ias
         parameters:
