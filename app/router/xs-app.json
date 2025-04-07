@@ -1,0 +1,61 @@
+{
+ "welcomeFile": "/index.html",
+ "authenticationMethod": "route",
+ "routes": [
+  {
+   "source": "^/sap/ui5/1(.*)$",
+   "target": "$1",
+   "destination": "ui5",
+   "csrfProtection": false
+  }, 
+  {
+   "source": "^/app/(.*)$",
+   "target": "$1",
+   "localDir": ".",
+   "cacheControl": "no-cache, no-store, must-revalidate"
+  },
+  {
+   "source": "^/appconfig/",
+   "localDir": ".",
+   "cacheControl": "no-cache, no-store, must-revalidate"
+  },
+  {
+   "source": "^/user-api(.*)",
+   "target": "$1",
+   "service": "sap-approuter-userapi"
+  },
+  {
+   "source": "^/user/me$",
+   "target": "/currentUser",
+   "service": "sap-approuter-userapi"
+  },
+  {
+   "source": "^/api/(.*)$",
+   "target": "/odata/v4/$1",
+   "destination": "srv-api",
+   "authenticationType": "ias",
+   "csrfProtection": false
+  }, 
+  {
+   "source": "^(.*)$",
+   "target": "/vue/$1",
+   "localDir": ".",
+   "cacheControl": "no-cache, no-store, must-revalidate"
+  }
+ ],
+ "login": {
+  "callbackEndpoint": "/login/callback?authType=ias"
+ },
+ "logout": {
+  "logoutEndpoint": "/logout",
+  "logoutPage": "/logout.html"
+ },
+ "services": {
+  "html5-apps-repo-rt": {
+   "endpoint": "html5-apps-repo-rt",
+   "logoutPath": "/logout",
+   "logoutMethod": "GET"
+  }
+ }
+}
+  

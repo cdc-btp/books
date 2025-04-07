@@ -1,0 +1,24 @@
+applications:
+  - name: approuter
+    host: approuter-ams
+    path: ams/approuter
+    buildpack: nodejs_buildpack
+    memory: 128M
+    env:
+      XSAPPNAME: books-router-xsapp
+      TENANT_HOST_PATTERN: "^(.*)-approuter-<tenantID>.acme.com"
+      destinations: >
+        [ 
+          {
+           "name":"books-router-destination",
+           "url":"https://books-router-<tenantID>.acme.com", 
+           "forwardAuthToken": true
+          }
+        ] 
+    services:
+      - books-cloud-logging
+      - ams-books-ias
+      - books-html5-repo-host
+      - books-html5-runtime
+      - srv-api
+      - books-auth

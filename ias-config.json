@@ -1,8 +1,9 @@
-{
+{       
 
+  "display-name": "Books Identity (${org}-${space})`",
   "authorization": {
     "enabled": true,
-    "value_help_url": "https://vhp-srv-develop.cert.cfapps.sap.hana.ondemand.com/odata/v4/ValueHelpService/",
+    "value_help_url": "https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com/odata/v4/ValueHelpService/",
     "show_in_consuming_app": true
   },
   "provided-apis": [
@@ -11,5 +12,38 @@
       "description": "api exposed by books app"
     }
   ],
-  "display-name": "books-ias-config"
+  "subject-name-identifier": {
+    "attribute": "email",
+    "fallback-attribute": "Email"
+  },
+
+  "oauth2-configuration": {
+    "public-client": true,
+    "grant-types": ["authorization_code", "urn:ietf:params:oauth:grant-type:jwt-bearer", "refresh_token", "urn:ietf:params:oauth:grant-type:token-exchange", "client_credentials", "implicit", "password"],
+    "credential-types": ["binding-secret", "x509"],
+    
+    "redirect-uris": [
+      "https://*.cfapps.eu20.hana.ondemand.com/login/callback?authType=ias",
+      "https://*.cfapps.eu20-001.hana.ondemand.com/login/callback?authType=ias",
+      "http://localhost:4004/login/callback?authType=ias",
+      "http://localhost:4005/login/callback?authType=ias"
+    ],  
+    "post-logout-redirect-uris": [
+      "https://*.cfapps.eu20.hana.ondemand.com/*/logout.html" ,
+      "https://*.cfapps.eu20-001.hana.ondemand.com/*/logout.html"
+    ]  
+  },
+  "xsuaa-cross-consumption":true,
+  "multi-tenant":false,
+  "identity-providers": [
+    {
+      "name": " gid.pyzlo.com",
+      "description": "SAP CDC Identity Provider",
+      "identity-provider-type": "ias",
+      "display-name": "SAP CDC Identity Provider"
+      
+    }
+  ]
+
+
 }

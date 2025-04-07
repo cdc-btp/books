@@ -19,6 +19,18 @@ File or Folder | Purpose
 - (in VS Code simply choose _**Terminal** > Run Task > cds watch_)
 - Start adding content, for example, a [db/schema.cds](db/schema.cds).
 
+## Bind Hybrid Services 
+
+```shell
+cds bind -2 ams-books-ias
+#cds bind -2 books-auth
+cds bind -2 books-destination
+cds bind -2 books-hana
+cds bind -2 books-conn --kind connectivity
+ 
+```
+
+
 
 ## Learn More
 

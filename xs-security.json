@@ -1,17 +1,42 @@
 {
+  "xsappname": "books-uaa-${org}-${space}",
   "scopes": [
     {
-      "name": "$XSAPPNAME.admin",
-      "description": "admin"
+      "name": "$XSAPPNAME.Member",
+      "description": "Member"
+    },
+    {
+      "name": "$XSAPPNAME.Junior",
+      "description": "Member"
+    },
+    {
+      "name": "$XSAPPNAME.Admin",
+      "description": "Admin"
     }
   ],
   "attributes": [],
   "role-templates": [
     {
-      "name": "admin",
+      "name": "Member",
       "description": "generated",
       "scope-references": [
-        "$XSAPPNAME.admin"
+        "$XSAPPNAME.Member"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "Junior",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Junior"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "Admin",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Admin"
       ],
       "attribute-references": []
     },

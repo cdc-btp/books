@@ -1,0 +1,9 @@
+
+---
+applications:
+
+  - name: approuter-html5-app-deployer
+    no-route: true
+    memory: 512M
+    services:
+      - approuter-html5-app-deployer-app-host
