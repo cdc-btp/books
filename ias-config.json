@@ -37,7 +37,7 @@
   "multi-tenant":false,
   "identity-providers": [
     {
-      "name": " gid.pyzlo.com",
+      "name": "cdc",
       "description": "SAP CDC Identity Provider",
       "identity-provider-type": "ias",
       "display-name": "SAP CDC Identity Provider"
