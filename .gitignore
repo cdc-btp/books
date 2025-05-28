@@ -39,3 +39,5 @@ logs
 .idea
 Makefile_*
 html5
+.env
+apiportal.jsonl
