@@ -7,6 +7,7 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1",
+    "@cap-js/postgres": "^1.14.1",
     "@cap-js/telemetry": ">=0",
     "@grpc/grpc-js": "^1",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0",
@@ -33,7 +34,7 @@
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy incidentsu --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase --delete-services --delete-service-keys --delete-service-brokers",
+    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase ",
     "build:security": "cds compile srv --to xsuaa > xs-security.json",
     "delete-flags": "--delete-services --delete-service-keys  --delete-service-brokers",
     "debug": "DEBUG=ams,ams-dev cds w",
@@ -41,12 +42,15 @@
     "build:dcl": "compile-dcl --dcl ams/dcl -o gen/ams/dcn",
     "deploy:hana": "cds build --for hana && cds deploy --to hana:books-hana"
   },
-  "sapux": [
-    "app/admin-books",
-    "app/browse"
-  ],
+  
   "cds": {
     "requires": {
+      "db": {
+        "kind": "postgres",
+        "impl": "@cap-js/postgres"
+   
+      },
+
       "html5-repo": true,
       "destinations": true,
       "workzone": true,
@@ -114,14 +118,22 @@
         },
         "telemetry": {
           "kind": "to-cloud-logging"
-        },
-        "db": {
-          "kind": "hana"
         }
       },
       "[hybrid]": {
         "auth": {
           "kind": "ias"
+        },
+        "db": {
+          "kind": "postgres",
+          "impl": "@cap-js/postgres",
+          "credentials": {
+            "host": "localhost",
+            "port": 5432,
+            "user": "postgres",
+            "password": "postgres",
+            "database": "Projects"
+          }
         }
       }
     },
