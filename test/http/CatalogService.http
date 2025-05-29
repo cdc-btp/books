@@ -14,15 +14,52 @@ GET {{server}}/odata/v4/catalog/Books
 {{auth}}
 
 
+### MyBooks
+# @name MyBooks_GET
+GET {{server}}/odata/v4/catalog/MyBooks
+{{auth}}
+
+
 ### Genres
 # @name Genres_GET
 GET {{server}}/odata/v4/catalog/Genres
 {{auth}}
 
 
-### Currencies
-# @name Currencies_GET
-GET {{server}}/odata/v4/catalog/Currencies
+### Genres
+# @name Genres_POST
+POST {{server}}/odata/v4/catalog/Genres
+Content-Type: application/json
+{{auth}}
+
+{
+  "ID": 22059107,
+  "name": "name-22059107",
+  "parent": {
+    "ID": 22059107
+  }
+}
+
+
+### Genres
+# @name Genres_PATCH
+PATCH {{server}}/odata/v4/catalog/Genres/22059107
+Content-Type: application/json
+{{auth}}
+
+{
+  "ID": 22059107,
+  "name": "name-22059107",
+  "parent": {
+    "ID": 22059107
+  }
+}
+
+
+### Genres
+# @name Genres_DELETE
+DELETE {{server}}/odata/v4/catalog/Genres/22059107
+Content-Type: application/json
 {{auth}}
 
 
@@ -33,6 +70,6 @@ Content-Type: application/json
 {{auth}}
 
 {
-  "book": 10313150,
-  "quantity": 66
+  "book": 4615287,
+  "quantity": 0
 }

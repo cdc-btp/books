@@ -1,0 +1,152 @@
+_schema-version: 3.3.0
+ID: books
+description: Demo CDC  login with AMS and IAS.
+version: 1.0.0
+modules:
+- name: books-ams-policies-deployer
+  type: javascript.nodejs
+  path: books-ams-policies-deployer
+  requires:
+  - name: ams-books-ias
+    parameters:
+      config:
+        app-identifier: policy-deployer
+        credential-type: X509_GENERATED
+  parameters:
+    buildpack: nodejs_buildpack
+    no-route: true
+    no-start: true
+    tasks:
+    - command: npm start
+      memory: 512M
+      name: deploy-dcl
+- name: books-srv
+  type: javascript.nodejs
+  path: books-srv
+  properties:
+    AMS_DCL_ROOT: ams/dcl
+  requires:
+  - name: ams-books-ias
+    parameters:
+      config:
+        credential-type: X509_GENERATED
+  - name: books-destination
+  - name: books-cloud-logging
+  - name: books-postgres
+  provides:
+  - name: srv-api
+    properties:
+      AMS_DCL_ROOT: ams/dcl
+      forwardAuthToken: true
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+    readiness-health-check-http-endpoint: /health
+    readiness-health-check-type: http
+- name: books
+  type: javascript.nodejs
+  path: books
+  requires:
+  - name: srv-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: srv-api
+      url: ~{srv-url}
+  - name: books-cloud-logging
+  - name: books-destination
+  - name: html5_repo_runtime
+  - name: ams-books-ias
+    parameters:
+      config:
+        credential-type: X509_GENERATED
+  parameters:
+    disk-quota: 256M
+    keep-existing-routes: true
+    memory: 256M
+- name: books-postgres-deployer
+  type: javascript.nodejs
+  path: books-postgres-deployer
+  requires:
+  - name: books-postgres
+  parameters:
+    buildpack: nodejs_buildpack
+    no-route: true
+    no-start: true
+    tasks:
+    - command: npm start
+      name: deploy-to-postgresql
+resources:
+- name: ams-books-ias
+  type: org.cloudfoundry.managed-service
+  parameters:
+    display-name: Books Identity (${org}-${space})`
+    path: ./ias-config.json
+    service: identity
+    service-name: ams-books-ias
+    service-plan: application
+- name: books-destination
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            HTML5.IASDependencyName: books-api
+            Name: books-srv
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+    service: destination
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: books-cloud-logging
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      ingest_otlp:
+        enabled: true
+    service: cloud-logging
+    service-plan: standard
+- name: books-application-logs
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: application-logs
+    service-plan: lite
+- name: html5_repo_runtime
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: html5_repo_runtime-service
+    service-plan: app-runtime
+- name: books-postgres
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: postgresql-db
+    service-plan: development
+- name: books-html5-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-plan: app-host
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - mkdir -p resources
+    - npx cds build --production
