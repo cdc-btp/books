@@ -1,13 +1,17 @@
 // ---------------------------------HEADER_START-----------------------------------------------
-// Generated from a CAP model by the SAP AMS Plugin (@sap/ams) 2.1.1
-// hash of generated content: dc25d6d3e7720cfc84dae9583deb8c7d9dda8c0a44bf267b9502e57ad321d651
+// Generated from a CAP model by the SAP AMS Plugin (@sap/ams) 2.0.0
+// hash of generated content: 8537b8096e1fb048199d1f1559d5eefc36a8df54921c560050a413d40c07688b
 // ----------------------------------HEADER_END------------------------------------------------
 
 SCHEMA {
+	description: String,
 	genre: String,
-	owner: String,
-	price: Number,
-	$user: {
-    	    id: String
-    }
+	just: {
+		for: {
+			showcasing: {
+				attributeNesting: Number
+			}
+		}
+	},
+	stock: Number
 }

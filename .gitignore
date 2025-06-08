@@ -41,3 +41,4 @@ Makefile_*
 html5
 .env
 apiportal.jsonl
+logs/

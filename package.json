@@ -6,139 +6,124 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@cap-js/hana": "^1",
     "@cap-js/postgres": "^1.14.1",
-    "@cap-js/telemetry": ">=0",
+    "@cap-js/sqlite": "^1.11.1",
+    "@cap-js/telemetry": "^1.3.1",
     "@grpc/grpc-js": "^1",
-    "@opentelemetry/exporter-metrics-otlp-grpc": "^0",
-    "@opentelemetry/exporter-trace-otlp-grpc": "^0",
-    "@opentelemetry/host-metrics": "^0",
-    "@sap/ams": "^2.0.0",
-    "@sap/cds": "^8",
-    "@sap/xssec": "^4",
-    "express": "^4",
-    "sqlite3": "^5.1.7"
+    "@opentelemetry/api": "^1.4.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "0.57.2",
+    "@opentelemetry/exporter-trace-otlp-grpc": "0.57.2",
+    "@opentelemetry/host-metrics": "^0.36.0",
+    "@sap/ams": "^3.1.2",
+    "@sap/cds": "^8.9.4",
+    "@sap/xssec": "^4.7.0",
+    "express": "^4"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.7.0",
-    "@cap-js/sqlite": "^1.7.8",
-    "@sap/ams-dev": "^2.0.0",
-    "@sap/cds-dk": "^8"
+    "@sap/ams-dev": "^2.1.3",
+    "@sap/cds-dk": "^8.9.4",
+    "better-sqlite3": "^11.10.0"
   },
   "scripts": {
     "cf:publish": "npm run build && npm run deploy",
-    "start": "cds-serve",
+    "start": "cds-serve --profile development",
     "start:router": "PORT=4005 cds bind --exec -- npm start --prefix app/router",
     "start:hybrid": "cds serve --profile hybrid --resolve-bindings",
     "start:admin": "DEBUG=ams cds bind  --exec -- npm start ",
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy incidentsu --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase ",
+    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase -f",
     "build:security": "cds compile srv --to xsuaa > xs-security.json",
     "delete-flags": "--delete-services --delete-service-keys  --delete-service-brokers",
     "debug": "DEBUG=ams,ams-dev cds w",
-    "build:ams": "cds build --for ams",
-    "build:dcl": "compile-dcl --dcl ams/dcl -o gen/ams/dcn",
-    "deploy:hana": "cds build --for hana && cds deploy --to hana:books-hana"
+    "deploy:blue-strategy": "npm run deploy -- --strategy=incremental-blue-green --no-restart-subscribed-apps",
+    "deploy:hana": "cds build --for hana && cds deploy --to hana:books-hana",
+    "build:modules": "cds build --clean --to postgres",
+    "ams:compile": "npx --package=@sap/ams compile-dcl --dcl ams/dcl -o gen/ams/dcn",
+    "ams:build": "mbt module-build -m=books-ams-policies-deployer -g",
+    "ams:deploy": "cf deploy -m=books-ams-policies-deployer -r ams-books-ias",
+    "ams:deploy:dcl": "npx --package=@sap/ams deploy-dcl gen/ams/dcn  -c ams-books-ias",
+    "db:build": "mbt module-build -m=books-postgres-deployer -g",
+    "db:deploy": "cf deploy -m=books-postgres-deployer -r books-postgres",
+    "example:build:module:dependencies": "mbt module-build -m module-a -a -g"
   },
-  
+  "sapux": [
+    "app/admin-books",
+    "app/browse"
+  ],
   "cds": {
     "requires": {
-      "db": {
-        "kind": "postgres",
-        "impl": "@cap-js/postgres"
-   
-      },
-
-      "html5-repo": true,
       "destinations": true,
-      "workzone": true,
       "auth": {
-        "ams": {
-          "autoCompile": true,
-          "autoDeploy": true,
-          "cache": {
-            "TTL": 0
+        "[development]": {
+          "kind": "mocked",
+          "users": {
+            "bob": {
+              "policies": [
+                "cap.admin",
+                "cap.Reader"
+              ]
+            },
+            "carol": {
+              "policies": [
+                "local.Zealot"
+              ]
+            },
+            "dave": {
+              "policies": [
+                "local.JuniorReader"
+              ]
+            },
+            "erin": {
+              "policies": [
+                "local.BestsellerReader"
+              ]
+            },
+            "fred": {
+              "policies": [
+                "local.Zealot",
+                "local.BestsellerReader"
+              ]
+            },
+            "technicalUser": {
+              "roles": [
+                "system-user"
+              ],
+              "ias_apis": [
+                "ReadCatalog"
+              ]
+            },
+            "principalPropagation": {
+              "policies": [
+                "local.JuniorReader"
+              ],
+              "ias_apis": [
+                "ReadCatalog"
+              ]
+            }
           }
         },
-        "users": {
-          "dave": {
-            "policies": [
-              "cap.admin"
-            ]
-          },
-          "me": {
-            "id": "me",
-            "policies": [
-              "cap.Member"
-            ],
-            "attr": {
-              "first_name": "me",
-              "name": "me"
+        "[production]": {
+          "kind": "ias",
+          "ams": {
+            "autoCompile": true,
+            "autoDeploy": true,
+            "cache": {
+              "TTL": 0
             }
-          },
-          "fred": {
-            "policies": [
-              "cap.Member"
-            ],
-            "attr": {
-              "first_name": "fred",
-              "name": "fred",
-              "birthdate": "1980-03-22",
-              "age": 41
-            }
-          },
-          "bob": {
-            "policies": [
-              "cap.Junior"
-            ],
-            "attr": {
-              "first_name": "bob",
-              "name": "bob",
-              "birthdate": "2012-03-22",
-              "age": 9
-            }
-          },
-          "alice": {
-            "policies": [
-              "cap.Admin"
-            ]
           }
-        }
-      },
-      "[development]": {
-        "auth": {
-          "strategy": "mock"
-        }
-      },
-      "[production]": {
-        "auth": {
+        },
+        "[hybrid]": {
           "kind": "ias"
-        },
-        "telemetry": {
+        }
+      },
+      "telemetry": {
+        "[production]": {
           "kind": "to-cloud-logging"
         }
-      },
-      "[hybrid]": {
-        "auth": {
-          "kind": "ias"
-        },
-        "db": {
-          "kind": "postgres",
-          "impl": "@cap-js/postgres",
-          "credentials": {
-            "host": "localhost",
-            "port": 5432,
-            "user": "postgres",
-            "password": "postgres",
-            "database": "Projects"
-          }
-        }
       }
-    },
-    "sql": {
-      "native_hana_associations": false
     }
   }
 }

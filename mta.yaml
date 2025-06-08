@@ -1,7 +1,7 @@
 _schema-version: 3.3.0
 ID: books
 version: 1.0.0
-description: "Demo CDC  login with AMS and IAS."
+description: "Demo CDC login with AMS & IAS."
 parameters:
   enable-parallel-deployments: true
   deploy_mode: html5-repo
@@ -10,8 +10,8 @@ build-parameters:
     - builder: custom
       commands:
         - npm ci
-        - npx cds build --production
         - mkdir -p resources
+        - npx cds build --production
 
 modules:
   - name: books-ams-policies-deployer
@@ -26,7 +26,7 @@ modules:
           command: npm start
           memory: 512M
     requires:
-      - name: ams-books-ias
+      - name: books-ias-cdc
         parameters:
           config:
             credential-type: X509_GENERATED
@@ -47,18 +47,20 @@ modules:
         properties:
           srv-url: ${default-url}
           AMS_DCL_ROOT: ams/dcl
+          forwardAuthToken: true
+
     requires:
-      - name: ams-books-ias
+      - name: books-ias-cdc
         parameters:
           config:
             credential-type: X509_GENERATED
+            app-identifier: books-srv
       - name: books-destination
       - name: books-cloud-logging
       - name: books-postgres
 
-
   #----AppRouter Module ------------------------------------------------
-  - name: books
+  - name: router
     type: approuter.nodejs
     path: app/router
     parameters:
@@ -76,12 +78,11 @@ modules:
       - name: books-destination
       - name: html5_repo_runtime
 
-      - name: ams-books-ias
+      - name: books-ias-cdc
         parameters:
           config:
             credential-type: X509_GENERATED
-            
-
+            app-identifier: books-router
 
   - name: books-postgres-deployer
     type: nodejs
@@ -97,21 +98,16 @@ modules:
       - name: books-postgres
 
 resources:
-  - name: ams-books-ias
-    # ------------------------------------------------------------
+  - name: books-ias-cdc
     type: org.cloudfoundry.managed-service
     parameters:
       path: ./ias-config.json
       service-plan: application
       service: identity
-      service-name: ams-books-ias
-      display-name: Books Identity (${org}-${space})`
+      service-name: books-ias-cdc
+      display-name: Books Identity (${org}-${space})
 
-  #      grant_type: , "authorization_code_pkce_s256"
-
-  # ------------------------------------------------------------
   - name: books-destination
-    # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     requires:
       - name: srv-api
@@ -137,7 +133,6 @@ resources:
                 Authentication: NoAuthentication
                 Type: HTTP
                 ProxyType: Internet
-  # ------------------------------------------------------------
 
   - name: books-cloud-logging
     type: org.cloudfoundry.managed-service
@@ -155,16 +150,20 @@ resources:
       service-plan: lite
 
   - name: html5_repo_runtime
-    # ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     parameters:
       service: html5-apps-repo
       service-plan: app-runtime
       service-name: html5_repo_runtime-service
+
   - name: books-postgres
     type: org.cloudfoundry.managed-service
     parameters:
       service: postgresql-db
       service-plan: development
 
-
+  - name: books-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host

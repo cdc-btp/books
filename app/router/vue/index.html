@@ -23,6 +23,12 @@
             <div v-if="user.tenant">Tenant: {{ user.tenant }}</div>
             <div> User: {{user.firstname }}</div>
             <div> Email: {{user.email}}</div>
+            <div> App Att {{user.app_att}}</div>
+            <code>
+                {{ JSON.stringify(user, null, 2) }}
+            </code>
+            <div> <a href="/user/profile/">Profile</a> </div>
+            <div> <a href="/user/logout/">Logout</a> </div>
         </div>
         <div v-else>
             <input type="submit" value="Login" class="muted-button">

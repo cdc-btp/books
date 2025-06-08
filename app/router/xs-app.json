@@ -7,7 +7,7 @@
    "target": "$1",
    "destination": "ui5",
    "csrfProtection": false
-  }, 
+  },
   {
    "source": "^/app/(.*)$",
    "target": "$1",
@@ -35,7 +35,7 @@
    "destination": "srv-api",
    "authenticationType": "ias",
    "csrfProtection": false
-  }, 
+  },
   {
    "source": "^(.*)$",
    "target": "/vue/$1",
@@ -58,4 +58,3 @@
   }
  }
 }
-  

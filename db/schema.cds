@@ -1,50 +1,18 @@
-using { Currency, sap, managed} from '@sap/cds/common';
+using { Currency, managed, sap } from '@sap/cds/common';
+using { stocked, media } from '../srv/aspects';
 namespace sap.capire.bookshop;
 
 
-aspect media:managed  {
-    price: Integer;
-    genre: Association to Genres;
-    owner  : String  @cds.on.insert : $user.id;
-
-}
-
-annotate media with @ams.attributes: {
-    price: (price),
-    genre: (genre.name),
-    owner: (owner)
-};
- 
-annotate media with @ams.publicFields: {
-    price: (price),
-    genre: (genre.name),
-    owner: (owner)
-
-};
- 
-
-@restrict: [
-    { grant: ['CREATE'], to: 'authenticated-user'  }, 
-    { grant: ['READ'],  to: 'books:read'  },
-    { grant: ['*'],  to: 'books:write'  }
-]    
-entity Books : media {
+entity Books : managed, media, stocked {
   key ID : Integer;
   @mandatory title  : localized String(111);
-  descr  : localized String(1111);
   @mandatory author : Association to Authors;
-  genre  : Association to Genres;
-  stock  : Integer;
   price  : Decimal;
   currency : Currency;
   image : LargeBinary @Core.MediaType : 'image/png';
-  
 }
 
-
-
 annotate Books with @ams.alias : 'books';
-
 
 entity Authors : managed {
   key ID : Integer;

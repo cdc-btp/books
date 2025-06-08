@@ -1,0 +1,97 @@
+### @provision cdc
+POST https://admin.us1.gigya.com/admin.integration.provision
+Authorization: Bearer {cdc_access_token}
+Content-Type: application/x-www-form-urlencoded
+
+targetTenantId=console-idp-test&customerName=Console IDP Test
+
+
+
+<!-- response example
+{
+  "callId": "b6e3b7313ff941dfa0d74925da118a69",
+  "errorCode": 0,
+  "errorMessage": "OK",
+  "apiVersion": 2,
+  "statusCode": 200,
+  "statusReason": "OK",
+  "time": "2025-04-11T12:13:55.186Z",
+  "partnerID": 46588083,
+  "appKeyDetails": {
+    "appKey": "AC9VmMfr3AZZ",
+    "appSecret": "**REDACTED**",
+    "publicRSA": "",
+    "privateRSA": ""
+  }
+} -->
+
+
+### @RP Settings
+
+POST https://accounts.gigya.com/fidm.oidc.rp.createOP
+ 
+ {
+  "providerName": "ias2cdc",
+  "clientID": "458378cb-2d89-4be0-bda8-1f61f535be52",
+  "clientSecret": "**REDACTED**",
+  "authorizeEndpoint": "https://avemdttta.accounts.ondemand.com/oauth2/authorize",
+  "tokenEndpoint": "https://avemdttta.accounts.ondemand.com/oauth2/token",
+  "userInfoEndpoint": "https://avemdttta.accounts.ondemand.com/oauth2/userinfo",
+  "scopes": "openid email profile groups",
+  "issuer": "https://avemdttta.accounts.ondemand.com",
+  "jwks": "",
+  "clientAuthMethod": 0,
+  "finalizeUriType": 0,
+  "idTokenValidationSharedSecret": "",
+  "jwksEndpoint": "https://avemdttta.accounts.ondemand.com/oauth2/certs",
+  "claimMapping": [
+      {
+      "cdcFieldName": "data.lastSelectedPartner",
+      "opMappedClaimName": "partner"
+    },
+    {
+      "cdcFieldName": "data.isApproved",
+      "opMappedClaimName": "approved"
+    },
+    {
+      "cdcFieldName": "data.isRegisterationFinalized",
+      "opMappedClaimName": "registration"
+    },
+    {
+      "cdcFieldName": "data.initialPartnerId",
+      "opMappedClaimName": "partner"
+    },
+    {
+      "cdcFieldName": "data.companyName",
+      "opMappedClaimName": "company"
+    },
+    {
+      "cdcFieldName": "data.caseInsensitive.userKey",
+      "opMappedClaimName": "userKey"
+    }
+  ]
+}
+```
+
+
+
+
+Browser
+
+https://admin.us1.gigya.com/admin.tenant.getInvitationLink
+tenantID: console-idp-test
+
+Navigate to link from response (https://console.gigya.com/#/register/tenant?token=tk1.oPpwQKQRcPeCeAubcCP2i6Ne2CJrX_R-kdkIDbS2ODI)
+instead of register use dev tool console and call : gigya.socialize.login({provider: "oidc-ias2cdc"})
+
+Inspect
+https://admin.us1.gigya.com/admin.console.finalizeTenantInvitation
+tenantToken: tk1.HBRNI_t2RPWa3-xEF7NzLqGdemzGEqiz0_su9-IaLoM
+uid: 887d5d6797ab49109f6de01e96a71832
+uidSignature: c7b8/TmPcSdyxj7O6UVdCN+rWzU=
+signatureTimestamp: 1744368146
+APIKey: 3_sqD_aFV2w0q-2JSJ-RvvtJ_ziK7_dYmMxuAv4co0-hYA43Wjv4LSTDDEUJCmQ0LO
+
+
+https://admin.us1.gigya.com/admin.console.getPartners
+

@@ -1,0 +1,91 @@
+
+
+### @name create-idp
+POST https://cdcprovisiondemo.accounts400.ondemand.com/Applications/v1//070367b0-9048-4c12-9201-d46dc8bed427/IdentityProviders
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{ 
+  "name": "cdc-idp",
+  "displayName": "SAP CDC Identity Provider (Test)",
+  "companyId": "global",
+  "type": "openIdConnect",
+  "forwardAllSsoRequests": true,
+  "identityFederation": {
+    "useLocalUserStore": false,
+    "allowLocalUsersOnly": false,
+    "applyLocalIdPAuthnChecks": false
+  },
+  "automaticRedirect": true,
+  "loginHintConfiguration": {
+    "loginHintType": "userInput",
+    "sendMethod": "urlParam"
+  },
+  "saml2Configuration": {
+    "digestAlgorithm": "sha256",
+    "includeScoping": true,
+    "defaultNameIdFormat": "default",
+    "allowCreate": "none",
+    "assertionAttributes": [
+      {
+        "name": "groups",
+        "value": "${groups}"
+      },
+      {
+        "name": "global_user_id",
+        "value": "${id}"
+      },
+      {
+        "name": "user_uuid",
+        "value": "${sub}"
+      },
+      {
+        "name": "mail",
+        "value": "${email}"
+      }
+    ]
+  },
+  "oidcConfiguration": {
+    "subjectNameIdentifier": "email",
+    "discoveryUrl": "https://fidm.eu1.gigya.com/oidc/op/v1.0/4_aqGBGirVPg5zOIVhZhnNpQ/.well-known/openid-configuration",
+    "scopes": [
+      "openid",
+      "profile",
+      "groups",
+      "email"
+    ],
+    "tokenEndpointAuthMethod": "privateKeyJwt",
+    "scopes": [
+      "openid",
+      "profile",
+      "groups",
+      "email"
+    ],
+    "clientId": "IfcuTnR1UVv2rVrBTj5cMk8i",
+    "isClientSecretConfigured": false,
+    "pkceEnabled": true, 
+    "additionalConfig": {
+      "enforceNonce": false,
+      "enforceIssuerCheck": false,
+      "omitIDTokenHintForLogout": false
+    }
+  }
+}
+
+
+### @name bind-idp-to-ias-app
+PATCH https://cdcprovisiondemo.accounts400.ondemand.com/Applications/v1//070367b0-9048-4c12-9201-d46dc8bed427
+Authorization: Bearer {access_token}
+Content-Type: application/patch+json
+
+{
+   "operations": [
+      {
+         "op": "replace",
+         "path": "/urn:sap:identity:application:schemas:extension:sci:1.0:Authentication/defaultAuthenticatingIdpId",
+         "value": "6818af2d7bfe9c29e885b73b"
+      }
+   ]
+}
+
+
