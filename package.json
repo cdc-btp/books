@@ -14,6 +14,7 @@
     "@opentelemetry/exporter-metrics-otlp-grpc": "0.57.2",
     "@opentelemetry/exporter-trace-otlp-grpc": "0.57.2",
     "@opentelemetry/host-metrics": "^0.36.0",
+    "@sap-cloud-sdk/http-client": "^3.26.4",
     "@sap/ams": "^3.1.2",
     "@sap/cds": "^8.9.4",
     "@sap/xssec": "^4.7.0",
@@ -28,12 +29,15 @@
   "scripts": {
     "cf:publish": "npm run build && npm run deploy",
     "start": "cds-serve --profile development",
-    "start:router": "PORT=4005 cds bind --exec -- npm start --prefix app/router",
+    "start:router": "PORT=4005 cds bind --profile hybrid --exec -- npm start --prefix app/router",
     "start:hybrid": "cds serve --profile hybrid --resolve-bindings",
-    "start:admin": "DEBUG=ams cds bind  --exec -- npm start ",
+    "start:admin": "DEBUG=ams cds bind  --profile hybrid --resolve-bindings  --exec -- npm start ",
+    "start:idp": "DEBUG=ias cds bind --profile hybrid --exec -- npm start --prefix idp",
     "watch": "cds watch --open app/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy incidentsu --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
+    "build:ias-idp": "mbt build -s ias_idp_deploy.mta.yml --mtar=ias-idp.mtar",
+    "deploy:ias-idp": "cf deploy -m idp-deployer -r books-ias-cdc",
     "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase -f",
     "build:security": "cds compile srv --to xsuaa > xs-security.json",
     "delete-flags": "--delete-services --delete-service-keys  --delete-service-brokers",
@@ -41,18 +45,18 @@
     "deploy:blue-strategy": "npm run deploy -- --strategy=incremental-blue-green --no-restart-subscribed-apps",
     "deploy:hana": "cds build --for hana && cds deploy --to hana:books-hana",
     "build:modules": "cds build --clean --to postgres",
+    "build:idp_deployer": "npx pkgroll scripts/deploy-ias-idp.js --output ias-idp/index.js ",
     "ams:compile": "npx --package=@sap/ams compile-dcl --dcl ams/dcl -o gen/ams/dcn",
     "ams:build": "mbt module-build -m=books-ams-policies-deployer -g",
     "ams:deploy": "cf deploy -m=books-ams-policies-deployer -r ams-books-ias",
     "ams:deploy:dcl": "npx --package=@sap/ams deploy-dcl gen/ams/dcn  -c ams-books-ias",
     "db:build": "mbt module-build -m=books-postgres-deployer -g",
     "db:deploy": "cf deploy -m=books-postgres-deployer -r books-postgres",
+    "ias:build": "mbt module-build -m=books-ias-cdc-deployer -r books-cdc-idp -g",
+    "ias:deploy": "cf deploy -m=books-ias-idp-deployer -r books-ias-idp",
     "example:build:module:dependencies": "mbt module-build -m module-a -a -g"
   },
-  "sapux": [
-    "app/admin-books",
-    "app/browse"
-  ],
+ 
   "cds": {
     "requires": {
       "destinations": true,
@@ -124,6 +128,13 @@
           "kind": "to-cloud-logging"
         }
       }
+    }
+  },
+  "exports": {
+ 
+    "./deploy-ias-idp": {
+      "default": "./ias-idp/index.js",
+      "bin": "./ias-idp/index.js"
     }
   }
 }

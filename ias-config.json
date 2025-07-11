@@ -1,12 +1,13 @@
 {
-  "name": "books-ias-cdc",
+  "name": "ias-cdc-idp",
+  
   "authorization": {
     "enabled": true,
     "show_in_consuming_app": true,
-    "product_label": "books-ias-cdc"
+    "product_label": "ias-cdc-idp"
 
   },
-  "oauth2-configuration": {
+  "oauth2-configuration": { 
     "public-client": true,
     "front-channel-logout-uris": ["https://books-cdc.cfapps.sap.hana.ondemand.com/fc-logout"],
     "back-channel-logout-uris": ["https://books-cdc.cfapps.sap.hana.ondemand.com/bc-logout"],
@@ -27,7 +28,7 @@
       "refresh-usage-after-renewal": "off",
       "access-token-format": "jwt"
     },
-    "grant-types": ["client_credentials", "authorization_code"]
+    "grant-types": ["client_credentials", "authorization_code", "urn:ietf:params:oauth:grant-type:token-exchange", "refresh_token", "authorization_code_pkce_s256", "urn:ietf:params:oauth:grant-type:jwt-bearer"]
   },
 
   "xsuaa-cross-consumption": true,

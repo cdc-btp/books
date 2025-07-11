@@ -1,0 +1,797 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: Corporate Identity Providers Configurations API
+  description: To allow tenant administrators the management of corporate identity providers in SAP Cloud Identity Services - Identity Authentication tenants. It offers endpoints for CRUD operations (GET, POST, PATCH, DELETE) over the corporate identity providers.
+x-sap-shortText: Manage SAP Cloud Identity corporate identity provider configurations.
+externalDocs:
+  description: Cloud Identity services Documentation.
+  url: https://help.sap.com/docs/cloud-identity-services
+security:
+- BasicAuth: []
+- BearerAuth: []
+servers:
+- url: https://{tenantId}.{host}/IdentityProviders/v1/
+  description: SAP Cloud Identity Services endpoint
+  variables:
+    tenantId:
+      description: Cloud Identity services tenant
+      default: tenantId
+    host:
+      description: Cloud Identity services host
+      default: accounts.ondemand.com
+tags:
+- name: IdentityProviders
+  description: Retrieve, create, modify and delete corporate identity provider configurations.
+paths:
+  /{identityProviderId}:
+    get:
+      summary: Retrieves a single corporate identity provider.
+      description: Returns an existing corporate identity provider and information about it in the response.
+      operationId: getIdentityProvider
+      tags:
+      - IdentityProviders
+      parameters:
+      - name: identityProviderId
+        in: path
+        description: Identifier of the corporate identity provider in UUID format.
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: A single corporate identity provider object is retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityProviderResponse'
+        '401':
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error. The operation you requested led to an error during execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Patch a single or multiple properties of the corporate identity provider.
+      description: Allows to add, remove or replace a single or multiple properties of the corporate identity provider.
+      operationId: patchIdentityProvider
+      tags:
+      - IdentityProviders
+      parameters:
+      - name: identityProviderId
+        in: path
+        description: Identifier of the corporate identity provider in a UUID format.
+        required: true
+        schema:
+          type: string
+      - name: Modified-on-behalf-of
+        in: header
+        description: Provides the entity that should be considered in a modified on behalf scenario.
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityProviderPatchDto'
+            examples:
+              removeDescription:
+                value:
+                  operations:
+                  - op: remove
+                    path: /description
+                summary: Remove description.
+              replaceName:
+                value:
+                  operations:
+                  - op: replace
+                    path: /name
+                    value: new_name
+                summary: Change the name of the corporate identity provider.
+      responses:
+        '200':
+          description: Confirmation of successful update.
+        '400':
+          description: Invalid user input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error. The operation you requested led to an error during execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Deletes a corporate identity provider.
+      description: Deletes a corporate identity provider with the given id.
+      operationId: deleteIdentityProvider
+      tags:
+      - IdentityProviders
+      parameters:
+      - name: identityProviderId
+        in: path
+        required: true
+        description: The corporate identity provider is deleted by its identifier. The identifier is in a UUID format.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Confirmation of the deletion. The corporate identity provider is deleted.
+        '401':
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Resource is not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error. The operation you requested led to an error during execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /:
+    get:
+      summary: Fetches all or a subset of corporate identity providers.
+      description: Returns all corporate identity providers or a subset of corporate identity providers.
+      operationId: getAllIdentityProviders
+      tags:
+      - IdentityProviders
+      parameters:
+      - name: filter
+        schema:
+          type: string
+          maxLength: 255
+        in: query
+        description: |
+          Defines the search criteria.
+          Supported operators:
+          | Operator | Behavior |
+          |---- | ------------- |
+          | eq | The attribute and operator values must be identical for a match.|
+          ### Supported Attributes:
+          #### Core Schema
+            * name
+        required: false
+        examples:
+          name:
+            value: name eq SFSF
+      - name: limit
+        in: query
+        description: Number of items to return.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 100
+          maximum: 100
+          minimum: 1
+        example: 50
+      - name: skip
+        in: query
+        description: Number of items to skip.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+        example: 50
+      - name: cursor
+        in: query
+        description: Cursor to the starting identifier in a page.
+        required: false
+        schema:
+          type: string
+          format: uuid
+        example: b92c95c0-42ea-45c0-9cbb-aa49c1020e42
+      responses:
+        '200':
+          description: Returns an array of corporate identity providers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IdentityProvidersResponse'
+        '401':
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error. The operation you requested led to an error during execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Creates a corporate identity provider.
+      description: Creates a new corporate identity provider.
+      operationId: createIdentityProvider
+      tags:
+      - IdentityProviders
+      parameters:
+      - name: Modified-on-behalf-of
+        in: header
+        description: Provides the entity that should be used in a modified on behalf scenario.
+        required: false
+        schema:
+          type: string
+          maxLength: 255
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentityProviderDto'
+      responses:
+        '201':
+          description: The corporate identity provider is created.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Relative pointer to the location of the newly created corporate identity provider.
+        '400':
+          description: Invalid user input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Authentication failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Access is denied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error. The operation you requested led to an error during execution.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    PatchOperation:
+      type: object
+      required:
+      - op
+      - path
+      properties:
+        op:
+          type: string
+          description: Indicates the operation to perform.
+          enum:
+          - add
+          - remove
+          - replace
+        path:
+          type: string
+          maxLength: 255
+          pattern: ^/.*$
+          description: An attribute path describing the target of the operation.
+        value:
+          $ref: '#/components/schemas/PatchOperationValue'
+    PatchOperationValue:
+      type: object
+      description: The payload to be applied on the target of the operation.
+      example: firstName
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Error'
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    ErrorDetail:
+      type: object
+      properties:
+        target:
+          type: string
+        message:
+          type: string
+    IdentityProvidersResponse:
+      type: object
+      properties:
+        totalResults:
+          type: integer
+          format: int32
+        itemsPerPage:
+          type: integer
+          format: int32
+        nextCursor:
+          type: string
+        identityProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/IdentityProviderResponse'
+    IdentityProviderResponse:
+      type: object
+      allOf:
+      - properties:
+          id:
+            type: string
+            example: b92c95c0-42ea-45c0-9cbb-aa49c1020e42
+          meta:
+            $ref: '#/components/schemas/Meta'
+      - $ref: '#/components/schemas/IdentityProviderDto'
+    IdentityProviderDto:
+      type: object
+      required:
+      - displayName
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+          example: exampleEntityId
+        displayName:
+          type: string
+          maxLength: 255
+          example: Corporate Identity Provider
+        companyId:
+          type: string
+          maxLength: 255
+          example: global
+        type:
+          type: string
+          enum:
+          - sapSSO
+          - microsoftADFS
+          - saml2
+          - openIdConnect
+          x-enum-varnames:
+          - NW_SSO
+          - MS_ADFS_2_0
+          - SAML_2_0
+          - OPENID_CONNECT
+          default: saml2
+          example: saml2
+        logoutUrl:
+          type: string
+          pattern: ^(((http|https):\/\/(\*\.)?localhost)|(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,}))))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/logout
+        forwardAllSsoRequests:
+          type: boolean
+        identityFederation:
+          type: object
+          $ref: '#/components/schemas/IdentityFederationDto'
+        automaticRedirect:
+          type: boolean
+        loginHintConfiguration:
+          type: object
+          $ref: '#/components/schemas/LoginHintConfigurationDto'
+        saml2Configuration:
+          type: object
+          $ref: '#/components/schemas/SAML2ConfigurationDto'
+        oidcConfiguration:
+          type: object
+          $ref: '#/components/schemas/OIDCConfigurationDto'
+    IdentityProviderPatchDto:
+      type: object
+      required:
+      - operations
+      properties:
+        operations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatchOperation'
+    SAML2ConfigurationDto:
+      type: object
+      properties:
+        alias:
+          type: string
+          maxLength: 255
+          example: alias
+        digestAlgorithm:
+          enum:
+          - sha1
+          - sha256
+          - sha512
+          x-enum-varnames:
+          - SHA_1
+          - SHA_256
+          - SHA_512
+          default: sha256
+        includeScoping:
+          type: boolean
+          description: Enable or disable the Include scoping attribute to include or exclude the Scoping element in the SAML 2.0 request.
+        samlMetadataUrl:
+          type: string
+          maxLength: 2048
+          pattern: ^(((http|https):\/\/(\*\.)?localhost)|(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,}))))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/metadata
+        defaultNameIdFormat:
+          type: string
+          enum:
+          - default
+          - none
+          - unspecified
+          - email
+          x-enum-varnames:
+          - DEFAULT
+          - NONE
+          - UNSPECIFIED
+          - E_MAIL
+          example: default
+        allowCreate:
+          type: string
+          enum:
+          - default
+          - none
+          - true
+          - false
+          example: 'true'
+        assertionAttributes:
+          type: array
+          maxItems: 30
+          items:
+            $ref: '#/components/schemas/AssertionAttributeDto'
+          default: []
+        ssoEndpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/SAML2SSOEndpointDto'
+          default: []
+        sloEndpoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/SAML2SLOEndpointDto'
+          default: []
+        certificatesForSigning:
+          type: array
+          maxItems: 2
+          items:
+            $ref: '#/components/schemas/SigningCertificateDataDto'
+          default: []
+    OIDCConfigurationDto:
+      type: object
+      properties:
+        subjectNameIdentifier:
+          type: string
+          enum:
+          - none
+          - email
+          x-enum-varnames:
+          - NONE
+          - EMAIL
+          example: email
+        discoveryUrl:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com
+        issuer:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com
+          readOnly: true
+        tokenEndpoint:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/oauth2/token
+          readOnly: true
+        authorizationEndpoint:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/oauth2/authorize
+          readOnly: true
+        endSessionEndpoint:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/oauth2/logout
+          readOnly: true
+        userInfoEndpoint:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/oauth2/userinfo
+          readOnly: true
+        jwksUri:
+          type: string
+          maxLength: 1024
+          pattern: ^(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,})))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/oauth2/certs
+          readOnly: true
+        jwkSetPlain:
+          type: string
+          readOnly: true
+        tokenEndpointAuthMethod:
+          type: string
+          enum:
+          - clientSecretPost
+          - clientSecretBasic
+          - privateKeyJwt
+          - privateKeyJwtRfc7523
+          x-enum-varnames:
+          - CLIENT_SECRET_POST
+          - CLIENT_SECRET_BASIC
+          - PRIVATE_KEY_JWT
+          - PRIVATE_KEY_JWT_RFC_7523
+          example: clientSecretPost
+        scopes:
+          type: array
+          maxItems: 20
+          default: []
+          items:
+            type: string
+            maxLength: 99
+          example:
+          - scope1
+          - scope2
+          - scope3
+        clientId:
+          type: string
+          maxLength: 99
+        clientSecret:
+          type: string
+          maxLength: 99
+        isClientSecretConfigured:
+          type: boolean
+          readOnly: true
+        pkceEnabled:
+          type: boolean
+        refreshDelay:
+          type: integer
+          minimum: 1
+          maximum: 24
+          example: 12
+        acrs:
+          type: array
+          default: []
+          readOnly: true
+          items:
+            type: string
+          example:
+          - acr1
+          - acr2
+          - acr3
+        additionalConfig:
+          type: object
+          $ref: '#/components/schemas/OIDCAdditionalConfigDto'
+    SigningCertificateDataDto:
+      type: object
+      required:
+      - base64Certificate
+      - isDefault
+      properties:
+        dn:
+          type: string
+          example: CN=Gordon (PTM),L=accounts.sap.com,OU=8e1affb2-62a1-43cc-a687-2ba75e4b3d84,OU=Canary,OU=SAP Cloud Platform Clients,O=SAP SE,C=DE
+        base64Certificate:
+          type: string
+          example: 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
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        isDefault:
+          type: boolean
+      example:
+        dn: CN=test (PTM),L=milan-ids.sci-lab.cc.eu-de-1.cloud.sap,OU=8e1affb2-62a1-43cc-a687-2ba75e4b3d84,OU=Canary,OU=SAP Cloud Platform Clients,O=SAP SE,C=DE
+        base64Certificate: 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
+        validFrom: '2020-01-24T10:58:50'
+        validTo: '2026-01-24T10:58:50'
+        isDefault: false
+    AssertionAttributeDto:
+      type: object
+      required:
+      - name
+      - value
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 99
+        value:
+          type: string
+          minLength: 1
+          maxLength: 200
+    LoginHintConfigurationDto:
+      type: object
+      required:
+      - loginHintType
+      properties:
+        loginHintType:
+          type: string
+          enum:
+          - none
+          - userInput
+          - mail
+          - loginName
+          x-enum-varnames:
+          - NONE
+          - USER_INPUT
+          - MAIL
+          - LOGIN_NAME
+          example: userInput
+        sendMethod:
+          type: string
+          enum:
+          - urlParam
+          - authRequest
+          x-enum-varnames:
+          - URL_PARAM
+          - AUTH_REQUEST
+          example: authRequest
+    BindingName:
+      type: string
+      enum:
+      - urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+      - urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect
+      - urn:oasis:names:tc:SAML:2.0:bindings:SOAP
+      - urn:oasis:names:tc:SAML:2.0:bindings:URI
+    SAML2SSOEndpointDto:
+      type: object
+      required:
+      - bindingName
+      - location
+      properties:
+        bindingName:
+          $ref: '#/components/schemas/BindingName'
+        location:
+          type: string
+          pattern: ^(((http|https):\/\/(\*\.)?localhost)|(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,}))))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/location
+          maxLength: 2048
+        isDefault:
+          type: boolean
+    SAML2SLOEndpointDto:
+      type: object
+      required:
+      - bindingName
+      - location
+      properties:
+        bindingName:
+          $ref: '#/components/schemas/BindingName'
+        location:
+          type: string
+          maxLength: 2048
+        responseLocation:
+          type: string
+          pattern: ^(((http|https):\/\/(\*\.)?localhost)|(https:\/\/(([\w-])+|(((\*\.([\w-]{1,63}\.))?([\w-]{1,63}\.)*)|(([\w-]{1,63}\.)*(\*\.)?([\w-]{1,63}\.){2,}))([a-zA-Z]{2,}))))(:[\d]+)?(\/([\w-()@:%+.~?&/=])*)?$
+          example: https://accounts.sap.com/responseLocation
+          maxLength: 2048
+        isDefault:
+          type: boolean
+    IdentityFederationDto:
+      type: object
+      properties:
+        useLocalUserStore:
+          type: boolean
+        allowLocalUsersOnly:
+          type: boolean
+        applyLocalIdPAuthnChecks:
+          type: boolean
+        requiredGroups:
+          type: array
+          default: []
+          uniqueItems: true
+          items:
+            type: string
+    OIDCAdditionalConfigDto:
+      type: object
+      properties:
+        enforceNonce:
+          type: boolean
+        enforceIssuerCheck:
+          type: boolean
+        omitIDTokenHintForLogout:
+          type: boolean
+    Meta:
+      type: object
+      properties:
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        lastModified:
+          type: string
+          format: date-time
+          readOnly: true
+        createdBy:
+          type: string
+          example: P000001
+          readOnly: true
+        modifiedBy:
+          type: string
+          example: P000100
+          readOnly: true
+        modifiedOnBehalf:
+          type: string
+          example: P001000
+          readOnly: true
+        location:
+          type: string
+          readOnly: true
+          example: https://example.accounts.ondemand.com/IdentityProviders/v1/e5eca5aa-4824-4b07-ae50-625522c986f9
