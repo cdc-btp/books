@@ -69,7 +69,7 @@
                         <div 
                             v-for="(book, index) in list" 
                             :key="book.ID"
-                            @click="inspect"
+                            @click="inspect(book)"
                             class="book-card p-6 hover:bg-gray-50 cursor-pointer transition-all"
                         >
                             <div class="flex items-start space-x-4">

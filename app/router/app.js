@@ -23,10 +23,10 @@ const books = Vue.createApp ({
             books.list = data.value
         },
 
-        async inspect (eve) {
-            const book = books.book = books.list [eve.currentTarget.rowIndex-1]
+        async inspect (book) {
+            books.book = book
             const res = await GET(`/catalog/ListOfBooks/${book.ID}?$select=genre,price,currency&$expand=genre($select=name),currency($select=symbol)`)
-            Object.assign (book, res.data)
+            Object.assign (books.book, res.data)
             books.order = { quantity:1 }
             setTimeout (()=> $('form > input').focus(), 111)
         },
