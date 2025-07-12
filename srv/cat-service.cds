@@ -10,7 +10,7 @@ service CatalogService {
   excluding { descr };
 
   /** For display in details pages */
-  @restrict: [{ grant:['READ'], to: ['Reader', 'Inquisitor'], where: 'stock > 0' }]
+  @restrict: [{ grant:['READ'], to: ['Reader', 'Inquisitor', 'authenticated-user'], where: 'stock > 0' }]
   entity Books as projection on my.Books { *,
     author.name as author
   } excluding { createdBy, modifiedBy }

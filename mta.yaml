@@ -12,6 +12,7 @@ build-parameters:
         - npm ci
         - mkdir -p resources
         - npx cds build --production
+        - cp db.sqlite gen/srv/db.sqlite
 
 modules:
   - name: idp-deployer
@@ -20,7 +21,7 @@ modules:
     parameters:
       buildpack: nodejs_buildpack
       no-route: true
-      no-start: true 
+      no-start: true
       tasks:
         - name: deploy-idp
           command: npm run start
@@ -32,24 +33,24 @@ modules:
             credential-type: X509_GENERATED
             app-identifier: idp-deployer
 
-#  - name: books-ams-policies-deployer
-#    type: javascript.nodejs
-#    path: gen/policies
-#    parameters:
-#      buildpack: nodejs_buildpack
-#      no-route: true
-#      no-start: true
-#      tasks:
-#        - name: deploy-dcl
-#          command: npm start
-#          memory: 512M
-#    requires:
-#      - name: ias-cdc-idp
-#        parameters:
-#          config:
-#            credential-type: X509_GENERATED
-#            app-identifier: policy-deployer
-#            
+  - name: books-ams-policies-deployer
+    type: javascript.nodejs
+    path: gen/policies
+    parameters:
+      buildpack: nodejs_buildpack
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-dcl
+          command: npm start
+          memory: 512M
+    requires:
+      - name: ias-cdc-idp
+        parameters:
+          config:
+            credential-type: X509_GENERATED
+            app-identifier: policy-deployer
+
   - name: books-srv
     type: nodejs
     path: gen/srv
@@ -114,7 +115,7 @@ modules:
           command: npm start
     requires:
       - name: books-postgres
-        
+
 resources:
   - name: ias-cdc-idp
     type: org.cloudfoundry.managed-service
@@ -124,7 +125,7 @@ resources:
       service: identity
       service-name: ias-cdc-idp
       display-name: Books Identity Test (${org}-${space})
- 
+
   - name: books-destination
     type: org.cloudfoundry.managed-service
     requires:
@@ -185,4 +186,3 @@ resources:
     parameters:
       service: html5-apps-repo
       service-plan: app-host
-  

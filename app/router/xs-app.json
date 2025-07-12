@@ -1,7 +1,7 @@
 {
  "welcomeFile": "/index.html",
  "authenticationMethod": "route",
- "routes": [ 
+ "routes": [
   {
    "source": "^/app/(.*)$",
    "target": "$1",
@@ -17,14 +17,14 @@
    "source": "^/user-api(.*)",
    "target": "$1",
    "authenticationType": "ias",
-    "csrfProtection": false,
+   "csrfProtection": false,
    "service": "sap-approuter-userapi"
   },
   {
    "source": "^/user/me$",
    "target": "/currentUser",
    "authenticationType": "ias",
-    "csrfProtection": false,
+   "csrfProtection": false,
    "service": "sap-approuter-userapi"
   },
   {
@@ -39,7 +39,7 @@
    "target": "/index.html",
    "localDir": ".",
    "cacheControl": "no-cache, no-store, must-revalidate",
-   "csrfProtection": false 
+   "csrfProtection": false
   },
   {
    "source": "^/app.js",
@@ -47,7 +47,6 @@
    "localDir": ".",
    "cacheControl": "no-cache, no-store, must-revalidate",
    "csrfProtection": false
-
   }
  ],
  "login": {

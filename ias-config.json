@@ -28,7 +28,7 @@
       "refresh-usage-after-renewal": "off",
       "access-token-format": "jwt"
     },
-    "grant-types": ["client_credentials", "authorization_code", "urn:ietf:params:oauth:grant-type:token-exchange", "refresh_token", "authorization_code_pkce_s256", "urn:ietf:params:oauth:grant-type:jwt-bearer"]
+    "grant-types": ["client_credentials", "authorization_code", "urn:ietf:params:oauth:grant-type:token-exchange", "refresh_token",   "urn:ietf:params:oauth:grant-type:jwt-bearer"]
   },
 
   "xsuaa-cross-consumption": true,
