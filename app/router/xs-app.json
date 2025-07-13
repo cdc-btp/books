@@ -35,6 +35,13 @@
    "csrfProtection": false
   },
   {
+   "source": "^/api/catalog/(.*)$",
+   "target": "/catalog/$1",
+   "destination": "books-api",
+   "authenticationType": "ias",
+   "csrfProtection": false
+  },
+  {
    "source": "^/api/(.*)$",
    "target": "/odata/v4/$1",
    "destination": "books-api",
@@ -46,7 +53,9 @@
    "target": "/index.html",
    "localDir": ".",
    "cacheControl": "no-cache, no-store, must-revalidate",
-   "csrfProtection": false
+   "csrfProtection": false,
+   "authenticationType": "ias"
+
   },
   {
    "source": "^/app.js",

@@ -4,7 +4,7 @@
 
 ### Books
 # @name Books_GET
-GET {{server}}/odata/v4/admin/Books
+GET {{server}}/admin/Books
 {{auth}}
 
 

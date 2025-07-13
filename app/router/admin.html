@@ -198,7 +198,7 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                             <h3 class="text-lg font-semibold text-gray-900">Books Management</h3>
-                            <button @click="showAddBookModal = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
+                            <button @click="showAddBookModal = true; newBook = { title: '', price: '', stock: '' }" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                                 <span>Add Book</span>
                             </button>
@@ -258,10 +258,6 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1" for="add-title">Title</label>
                                     <input id="add-title" v-model="newBook.title" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Book Title" title="Book Title">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1" for="add-author">Author</label>
-                                    <input id="add-author" v-model="newBook.author" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Author Name" title="Author Name">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1" for="add-price">Price</label>
@@ -403,7 +399,6 @@
                     showAddBookModal: false,
                     newBook: {
                         title: '',
-                        author: '',
                         price: '',
                         stock: ''
                     }
@@ -469,6 +464,8 @@
                     }
                 },
 
+
+
                 async fetchStats() {
                     try {
                         // Mock stats
@@ -494,7 +491,7 @@
                     try {
                         await axios.post('/api/admin/Books', this.newBook)
                         this.showAddBookModal = false
-                        this.newBook = { title: '', author: '', price: '', stock: '' }
+                        this.newBook = { title: '', price: '', stock: '' }
                         await this.fetchBooks()
                     } catch (error) {
                         alert('Error adding book: ' + (error.response?.data?.error?.message || error.message))

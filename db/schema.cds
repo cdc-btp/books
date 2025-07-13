@@ -4,9 +4,9 @@ namespace sap.capire.bookshop;
 
 
 entity Books : managed, media, stocked {
-  key ID : Integer;
+  key ID : Integer @(cds.generated);
   @mandatory title  : localized String(111);
-  @mandatory author : Association to Authors;
+  author : Association to Authors;
   price  : Decimal;
   currency : Currency;
   image : LargeBinary @Core.MediaType : 'image/png';
@@ -15,7 +15,7 @@ entity Books : managed, media, stocked {
 annotate Books with @ams.alias : 'books';
 
 entity Authors : managed {
-  key ID : Integer;
+  key ID : Integer @(cds.generated);
   @mandatory name   : String(111);
   dateOfBirth  : Date;
   dateOfDeath  : Date;
@@ -26,7 +26,7 @@ entity Authors : managed {
 
 /** Hierarchically organized Code List for Genres */
 entity Genres : sap.common.CodeList {
-  key ID   : Integer;
+  key ID   : Integer @(cds.generated);
   parent   : Association to Genres;
   children : Composition of many Genres on children.parent = $self;
 }

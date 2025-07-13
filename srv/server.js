@@ -12,3 +12,8 @@ cds.on('served', async () => {
     await amsCapPluginRuntime.ams.whenReady(5000); // AMS startup check. TODO: couple this with /health endpoint instead
     console.log("AMS has become ready.");
 });
+
+// Serve all services using the proper method
+module.exports = cds.server;
+
+

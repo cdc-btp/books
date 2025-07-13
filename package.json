@@ -22,14 +22,15 @@
  },
  "devDependencies": {
   "@cap-js/cds-types": "^0.7.0",
+  "@cap-js/sqlite": "^1",
   "@sap/ams-dev": "^2.1.3",
   "@sap/cds-dk": "^8.9.4",
   "better-sqlite3": "^11.10.0"
  },
  "scripts": {
   "cf:publish": "npm run build && npm run deploy",
-  "dev": "cds watch --profile hybrid  --open app/index.html?sap-ui-xx-viewCache=false",
-  "start": "cds-serve --profile hybrid --resolve-bindings",
+  "dev": "cds watch --profile hybrid  --open router/index.html",
+  "start": "cds-serve",
   "start:router": "PORT=4005 cds bind --profile hybrid --exec -- npm start --prefix app/router",
   "start:hybrid": "cds serve --profile hybrid --resolve-bindings",
   "start:admin": "DEBUG=ams cds bind  --profile hybrid --resolve-bindings  --exec -- npm start ",
@@ -128,15 +129,20 @@
      "kind": "to-cloud-logging"
     }
    },
-   "db":{
+   "db": {
     "kind": "postgres",
-     "[development]": {
+    "[production]": {
+     "kind": "postgres"
+    },
+    "[development]": {
      "kind": "sqlite",
-     "model": "db/schema.cds"
+     "credentials": {
+      "url": "db.sqlite"
      }
-
+    }
    }
   }
+  
  },
  "exports": {
   "./deploy-ias-idp": {
