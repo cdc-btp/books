@@ -1,8 +1,9 @@
 
 
 ### @name create-idp
-POST https://cdcprovisiondemo.accounts400.ondemand.com/Applications/v1//070367b0-9048-4c12-9201-d46dc8bed427/IdentityProviders
-Authorization: Bearer {access_token}
+@access_token =Sgh2f8mgvppGdoISrjmQn9AJ3O7Vt78H
+POST https://cdcprovisiondemo.accounts400.ondemand.com/IdentityProviders
+Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
 { 
@@ -48,12 +49,6 @@ Content-Type: application/json
   "oidcConfiguration": {
     "subjectNameIdentifier": "email",
     "discoveryUrl": "https://fidm.eu1.gigya.com/oidc/op/v1.0/4_aqGBGirVPg5zOIVhZhnNpQ/.well-known/openid-configuration",
-    "scopes": [
-      "openid",
-      "profile",
-      "groups",
-      "email"
-    ],
     "tokenEndpointAuthMethod": "privateKeyJwt",
     "scopes": [
       "openid",

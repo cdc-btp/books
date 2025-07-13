@@ -27,18 +27,6 @@
   "description": "",
   "devDependencies": {
     "pkgroll": "^2.14.1"
-  },
-  "requires": {
-
-    "idp": {
-      "kind": "ias",
-      "credential-type": "X509_GENERATED",
-      "app-identifier":"idp-deployer",
-      "credentials": {
-        "type": "X509_GENERATED",
-        "app-identifier":"idp-deployer"
-      }
-    }
   }
-
+   
 }
