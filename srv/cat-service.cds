@@ -1,6 +1,7 @@
 using { sap.capire.bookshop as my } from '../db/schema';
 
 service CatalogService@(path: '/catalog')  {
+ entity Orders as projection on my.Orders;
 
   /** For displaying lists of Books */
   @ams.attributes: {
@@ -29,4 +30,3 @@ service CatalogService@(path: '/catalog')  {
 
   event OrderedBook : { book: Books:ID; quantity: Integer; buyer: String };
 }
- 

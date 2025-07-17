@@ -10,7 +10,8 @@ const books = Vue.createApp ({
             list: [],
             book: undefined,
             order: { quantity:1, succeeded:'', failed:'' },
-            user: undefined
+            user: undefined,
+            myOrders: []
         }
     },
 
@@ -37,6 +38,7 @@ const books = Vue.createApp ({
                 const res = await POST(`/catalog/submitOrder`, { quantity, book: book.ID })
                 book.stock = res.data.stock
                 books.order = { quantity, succeeded: `Successfully ordered ${quantity} item(s).` }
+                await books.fetchMyOrders()
             } catch (e) {
                 books.order = { quantity, failed: e.response.data.error ? e.response.data.error.message : e.response.data }
             }
@@ -55,11 +57,18 @@ const books = Vue.createApp ({
                 if (user.id !== 'anonymous') books.user = user
             } catch (err) { books.user = { id: err.message } }
         },
+
+        async fetchMyOrders() {
+            if (!books.user) return books.myOrders = [];
+            const { data } = await GET('/my-orders/Order?$expand=Items($expand=product)');
+            books.myOrders = data.value || [];
+        },
     }
 }).mount('#app')
 
 books.getUserInfo()
 books.fetch() // initially fill list of books
+books.fetchMyOrders()
 
 document.addEventListener('keydown', (event) => {
     // hide user info on request

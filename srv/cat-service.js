@@ -2,8 +2,7 @@ const cds = require('@sap/cds')
 
 class CatalogService extends cds.ApplicationService { 
   init() {
-    const { Books } = this.entities
-    const { ListOfBooks } = this.entities
+    const { Books, ListOfBooks,Orders } = this.entities
 
     // Reduce stock of ordered books if available stock suffices
     this.on('submitOrder', async req => {
@@ -17,6 +16,17 @@ class CatalogService extends cds.ApplicationService {
 
       // Reduce stock in database and return updated stock value
       await UPDATE (Books, id) .with ({ stock: book.stock -= quantity })
+
+      // Create Order and OrderItem for MyOrders
+      // Find max order ID for new order
+      const lastOrder = await SELECT.one.from(Orders).columns('max(ID) as ID')
+      const newOrderId = (lastOrder && lastOrder.ID ? lastOrder.ID : 0) + 1
+      await INSERT.into(Orders).entries({
+        ID: newOrderId,
+        buyer: req.user.id,
+        Items: [{ pos: 1, product_ID: id, quantity }]
+      })
+
       return book
     })
 
@@ -31,9 +41,11 @@ class CatalogService extends cds.ApplicationService {
     })
 
     // Add some discount for overstocked books
-    this.after('each', ListOfBooks, book => {
-      if (book.stock > 111) book.title += ` -- 11% discount!`
-    })
+    if (ListOfBooks) {
+      this.after('each', ListOfBooks, book => {
+        if (book.stock > 111) book.title += ` -- 11% discount!`
+      })
+    }
 
     // Emit event when an order has been submitted
     this.after('submitOrder', async (_,req) => {

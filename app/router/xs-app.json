@@ -43,7 +43,7 @@
   },
   {
    "source": "^/api/(.*)$",
-   "target": "/odata/v4/$1",
+   "target": "/$1",
    "destination": "books-api",
    "authenticationType": "ias",
    "csrfProtection": false
