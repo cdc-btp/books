@@ -1,0 +1,306 @@
+
+
+### @OP Settings
+POST https://fidm.eu1.gigya.com/fidm.oidc.op.setConfig?apiKey=4_aqGBGirVPg5zOIVhZhnNpQ
+Content-Type: application/form-urlencoded
+
+{
+  "proxyPage": "https://login.gigen.zon.cx/pages/login",
+  "customScopes": {
+    "app": {
+      "claims": [
+        "app"
+      ]
+    },
+    "groups": {
+      "claims": [
+        "groups"
+      ]
+    },
+    "apps": {
+      "claims": [
+        "apps"
+      ]
+    }
+  },
+  "customClaims": {
+    "app": {
+      "fieldName": "data.application[0]",
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "groups": {
+      "fieldName": "data.groups",
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "apps": {
+      "fieldName": "data.application",
+      "useInIdToken": true,
+      "useInAccessToken": false
+    }
+  },
+  "standardClaims": {
+    "uid": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "birthdate": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "address": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "gender": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "name": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "nickname": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "phone_number": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "given_name": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "family_name": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "picture": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "email": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    }
+  },
+  "issuer": "https://login.gigen.zon.cx/oidc/op/v1.0/4_aqGBGirVPg5zOIVhZhnNpQ/",
+  "dynamicClientRegistration": {
+    "enabled": false,
+    "refreshTokenRotation": false,
+    "enforcePkce": true,
+    "redirectUris": [],
+    "accessTokenFormat": "opaque",
+    "idTokenContent": "limited",
+    "skipConsent": false
+  },
+  "availableAccessTokenAudiences": [],
+  "allowIntrospectAllStaticRp": true,
+  "deviceFlowConfig": {
+    "interval": 5,
+    "expiresIn": 1800,
+    "verificationUri": "https://login.gigen.zon.cx/pages/device"
+  },
+  "cnameAsBaseDomain": true
+}
+
+### @get OP Config
+GET https://fidm.eu1.gigya.com/fidm.oidc.op.getConfig?apiKey=4_aqGBGirVPg5zOIVhZhnNpQ&format=json
+
+<!-- response example
+{
+  "callId": "7704db44ce854e41a7d45a5202fdf8f6",
+  "errorCode": 0,
+  "apiVersion": 2,
+  "statusCode": 200,
+  "statusReason": "OK",
+  "time": "2025-06-08T18:36:18.559Z",
+  "proxyPage": "https://login.gigen.zon.cx/pages/login",
+  "customScopes": {
+    "app": {
+      "claims": [
+        "app"
+      ]
+    },
+    "groups": {
+      "claims": [
+        "groups"
+      ]
+    },
+    "apps": {
+      "claims": [
+        "apps"
+      ]
+    }
+  },
+  "customClaims": {
+    "app": {
+      "fieldName": "data.application[0]",
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "groups": {
+      "fieldName": "data.groups",
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "apps": {
+      "fieldName": "data.application",
+      "useInIdToken": true,
+      "useInAccessToken": false
+    }
+  },
+  "standardClaims": {
+    "uid": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "birthdate": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "address": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "gender": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "name": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "nickname": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "phone_number": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "given_name": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "family_name": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "picture": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    },
+    "email": {
+      "useInIdToken": true,
+      "useInAccessToken": false
+    }
+  },
+  "issuer": "https://login.gigen.zon.cx/oidc/op/v1.0/4_aqGBGirVPg5zOIVhZhnNpQ/",
+  "dynamicClientRegistration": {
+    "enabled": false,
+    "refreshTokenRotation": false,
+    "enforcePkce": true,
+    "redirectUris": [],
+    "accessTokenFormat": "opaque",
+    "idTokenContent": "limited",
+    "skipConsent": false
+  },
+  "availableAccessTokenAudiences": [],
+  "allowIntrospectAllStaticRp": true,
+  "deviceFlowConfig": {
+    "interval": 5,
+    "expiresIn": 1800,
+    "verificationUri": "https://login.gigen.zon.cx/pages/device"
+  },
+  "cnameAsBaseDomain": true
+}
+-->
+### @OP Client
+
+### @create OP Client
+POST https://accounts.gigya.com/fidm.oidc.op.createRP
+Content-Type: application/json
+
+{
+  "description": "https://cdcprovisiondemo.accounts400.ondemand.com",
+  "redirectUris": [
+    "https://cdcprovisiondemo.accounts400.ondemand.com/oauth2/callback"
+  ],
+  "supportedResponseTypes": [
+    "token",
+    "id_token",
+    "code"
+  ],
+  "subjectIdentifierType": "public",
+  "allowedScopes": [
+    "openid",
+    "email",
+    "profile",
+    "address",
+    "phone",
+    "app",
+    "apps",
+    "groups"
+  ],
+  "refreshTokenRotationEnabled": true,
+  "enforcePkce": true,
+  "tokenEndpointAuthMethod": "none",
+  "skipConsent": true,
+  "accessTokenAudiences": [],
+  "customProxyPageUrl": "https://login.gigen.zon.cx/pages/login",
+  "accessTokenFormat": "jwt",
+  "idTokenContent": "full",
+  "returnAudienceAsArray": false,
+  "B2BAppId": ""
+}
+
+###@get OP Client
+GET https://fidm.eu1.gigya.com/fidm.oidc.op.getRP?clientID=IfcuTnR1UVv2rVrBTj5cMk8i&apiKey=4_aqGBGirVPg5zOIVhZhnNpQ&format=json
+
+
+<!-- response example
+{
+  "callId": "ee416c10cb4f4d5d8dbb842f77d59f62",
+  "errorCode": 0,
+  "apiVersion": 2,
+  "statusCode": 200,
+  "statusReason": "OK",
+  "time": "2025-06-08T18:31:52.091Z",
+  "description": "https://cdcprovisiondemo.accounts400.ondemand.com",
+  "clientID": "IfcuTnR1UVv2rVrBTj5cMk8i",
+  "clientSecret": "r6f0SkMCaoVin2tCJ3JVt1OlsrCbrP4ISTArOve7aNqd6aR85XS1NACYENfzcEGcRlw-R42AtTKNNIRNHfJ7hg",
+  "clientSecretCreateTime": "2025-05-05T12:30:15Z",
+  "redirectUris": [
+    "https://cdcprovisiondemo.accounts400.ondemand.com/oauth2/callback"
+  ],
+  "supportedResponseTypes": [
+    "token",
+    "id_token",
+    "code"
+  ],
+  "subjectIdentifierType": "public",
+  "allowedScopes": [
+    "openid",
+    "email",
+    "profile",
+    "address",
+    "phone",
+    "app",
+    "apps",
+    "groups"
+  ],
+  "refreshTokenRotationEnabled": true,
+  "enforcePkce": true,
+  "tokenEndpointAuthMethod": "none",
+  "skipConsent": true,
+  "accessTokenAudiences": [],
+  "customProxyPageUrl": "https://login.gigen.zon.cx/pages/login",
+  "accessTokenFormat": "jwt",
+  "idTokenContent": "full",
+  "returnAudienceAsArray": false,
+  "B2BAppId": ""
+}
+-->

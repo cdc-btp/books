@@ -1,20 +1,38 @@
 _schema-version: 3.3.0
 ID: books
 version: 1.0.0
-description: "A simple CAP project."
+
+description: "Books - IAS & AMS & CDC "
 parameters:
   enable-parallel-deployments: true
-  deploy_mode: html5-repo
 build-parameters:
   before-all:
     - builder: custom
       commands:
         - npm ci
-        - npx cds build --production
         - mkdir -p resources
-        - cp workzone/cdm.json resources/cdm.json
+        - npx cds build --production
+        - cp db.sqlite gen/srv/db.sqlite
 
 modules:
+  #  - name: idp-deployer
+  #    type: nodejs
+  #    path: idp
+  #    parameters:
+  #      buildpack: nodejs_buildpack
+  #      no-route: true
+  #      no-start: true
+  #      tasks:
+  #        - name: deploy-idp
+  #          command: npm run start
+  #          memory: 256M
+  #    requires:
+  #      - name: ias-cdc-idp
+  #        parameters:
+  #          config:
+  #            credential-type: X509_GENERATED
+  #            app-identifier: idp-deployer
+
   - name: books-ams-policies-deployer
     type: javascript.nodejs
     path: gen/policies
@@ -27,11 +45,12 @@ modules:
           command: npm start
           memory: 512M
     requires:
-      - name: ams-books-ias
+      - name: ias-cdc-idp
         parameters:
           config:
             credential-type: X509_GENERATED
             app-identifier: policy-deployer
+
   - name: books-srv
     type: nodejs
     path: gen/srv
@@ -44,108 +63,23 @@ modules:
     build-parameters:
       builder: npm
     provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
+      - name: books-api # required by consumers of CAP services (e.g. approuter)
         properties:
           srv-url: ${default-url}
           AMS_DCL_ROOT: ams/dcl
+          forwardAuthToken: true
+
     requires:
-      - name: books-hana
-      - name: ams-books-ias
+      - name: ias-cdc-idp
         parameters:
           config:
             credential-type: X509_GENERATED
+            app-identifier: books-srv
       - name: books-destination
       - name: books-cloud-logging
-      - name: books-conn
+      - name: books-postgres
 
-  - name: books-hana-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: books-hana
-
-  - name: books-app-deployer
-    type: com.sap.application.content
-    path: gen 
-    requires:
-      - name: books-html5-repo-host
-        parameters:
-          content-target: true
-    build-parameters:
-      build-result: app/
-      requires:
-        - name: booksadminbooks
-          artifacts:
-            - admin-books.zip
-          target-path: app/
-        - name: booksbrowse
-          artifacts:
-            - browse.zip
-          target-path: app/
-
-  - name: booksadminbooks
-    type: html5
-    path: app/admin-books
-    build-parameters:
-      build-result: dist
-      builder: custom
-      commands:
-        - npm i
-        - npm run build
-        - npm ci
-      supported-platforms:
-        []
-  - name: booksbrowse
-    type: html5
-    path: app/browse
-    build-parameters:
-      build-result: dist
-      builder: custom
-      commands:
-        - npm i
-        - npm run build
-        - npm ci
-      supported-platforms:
-        []
-  # ------------------ DESTINATION CONTENT ---------------------
-  - name: books-destinations
- # ------------------------------------------------------------
-    type: com.sap.application.content
-    requires:
-      - name: books-html5-repo-host
-        parameters:
-          service-key:
-            name: books-html5-repo-host-key
-      - name: srv-api
-      - name: books-destination
-        parameters:
-          content-target: true 
-      - name: books-uaa
-        parameters:
-          service-key:
-            name: books-uaa-key
-
-    build-parameters:
-      no-source: true
-    parameters:
-      content:
-        instance:
-          existing_destinations_policy: update
-          destinations:
-            - Name: books-html5-repository
-              ServiceInstanceName: books-html5-repo-host
-              ServiceKeyName: books-html5-repo-host-key
-              sap.cloud.service: books.service
-            - Name: books-uaa
-              Authentication: OAuth2UserTokenExchange
-              ServiceInstanceName: books-uaa
-              ServiceKeyName: books-uaa-key
-              sap.cloud.service: books.service
-
-
-  - name: books
+  - name: router
     type: approuter.nodejs
     path: app/router
     parameters:
@@ -153,78 +87,49 @@ modules:
       disk-quota: 256M
       memory: 256M
     requires:
-      - name: srv-api
+      - name: books-api
         group: destinations
         properties:
-          name: srv-api # must be used in xs-app.json as well
+          name: books-api # must be used in xs-app.json as well
           url: ~{srv-url}
           forwardAuthToken: true
       - name: books-cloud-logging
       - name: books-destination
       - name: html5_repo_runtime
-      - name: books-uaa
-        parameters: 
-          service-key:
-            name: books-uaa-key
 
-      - name: ams-books-ias
+      - name: ias-cdc-idp
         parameters:
           config:
             credential-type: X509_GENERATED
+            app-identifier: books-router
 
+  - name: books-postgres-deployer
+    type: nodejs
+    path: gen/pg
+    parameters:
+      buildpack: nodejs_buildpack
+      no-route: true
+      no-start: true
+      tasks:
+        - name: deploy-to-postgresql
+          command: npm start
+    requires:
+      - name: books-postgres
 
 resources:
-# ------------------------------------------------------------
-  - name: books-uaa
-# ------------------------------------------------------------
-
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: books-uaa-${org}-${space}
-        tenant-mode: dedicated
-  
-# ------------------------------------------------------------
-  - name: books-hana
-# ------------------------------------------------------------
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
-# ------------------------------------------------------------
-  - name: ams-books-ias
-# ------------------------------------------------------------
+  - name: ias-cdc-idp
     type: org.cloudfoundry.managed-service
     parameters:
       path: ./ias-config.json
       service-plan: application
       service: identity
-      service-name: ams-books-ias
-#      grant_type: , "authorization_code_pkce_s256"
-# ------------------------------------------------------------
-  - name: books-html5-repo-host
-# ------------------------------------------------------------
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: html5-apps-repo
-      service-plan: app-host
-# ------------------------------------------------------------
-  - name: html5_repo_runtime
-# ------------------------------------------------------------
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: html5-apps-repo
-      service-plan: app-runtime
-      service-name: html5_repo_runtime-service
-# ------------------------------------------------------------
+      service-name: ias-cdc-idp
+      display-name: Books Identity Test (${org}-${space})
+
   - name: books-destination
-# ------------------------------------------------------------
     type: org.cloudfoundry.managed-service
     requires:
-      - name: srv-api
+      - name: books-api
     parameters:
       service: destination
       service-plan: lite
@@ -234,8 +139,8 @@ resources:
           instance:
             existing_destinations_policy: update
             destinations:
-              - Name: books-srv
-                URL: ~{srv-api/srv-url}
+              - Name: books-api
+                URL: ~{books-api/srv-url}
                 Authentication: NoAuthentication
                 Type: HTTP
                 ProxyType: Internet
@@ -247,7 +152,6 @@ resources:
                 Authentication: NoAuthentication
                 Type: HTTP
                 ProxyType: Internet
-  # ------------------------------------------------------------
 
   - name: books-cloud-logging
     type: org.cloudfoundry.managed-service
@@ -258,54 +162,27 @@ resources:
         ingest_otlp:
           enabled: true
 
-  - name: books-conn
+  - name: books-application-logs
     type: org.cloudfoundry.managed-service
     parameters:
+      service: application-logs
       service-plan: lite
-      service: connectivity
-      service-name: books-conn
-      service-keys:
-        - name: books-conn-key
 
+  - name: html5_repo_runtime
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime
+      service-name: html5_repo_runtime-service
 
-#  - name: books-rt-destination
-#    # ------------------------------------------------------------
-#
-#    type: org.cloudfoundry.managed-service
-#    parameters:
-#      service: destination
-#      service-plan: lite
-#      config:
-#        init_data:
-#          subaccount:
-#            existing_destinations_policy: update
-#            destinations:
-#              - Name: books-srv-rt
-#                URL: ~{srv-api/srv-url}
-#                Authentication: NoAuthentication
-#                Type: HTTP
-#                ProxyType: Internet
-#                HTML5.ForwardAuthToken: true
-#                HTML5.DynamicDestination: true
-#                HTML5.IASDependencyName: books-api
-#              - Name: ui5
-#                URL: https://ui5.sap.com
-#                Authentication: NoAuthentication
-#                Type: HTTP
-#                ProxyType: Internet
-#              - Authentication: NoAuthentication
-#                Name: books-rt
-#                ProxyType: Internet
-#                Type: HTTP
-#                URL: https://books-rt.${default-domain}
-#                CEP.HTML5contentprovider: true
-#                HTML5.IASDependencyName: books-api
-#      
-#        HTML5Runtime_enabled: true
-#    requires:
-#      - name: srv-api
-#        group: destinations
-#        properties:
-#          name: srv-api # must be used in xs-app.json as well
-#          url: ~{srv-url}
-#          forwardAuthToken: true
+  - name: books-postgres
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: postgresql-db
+      service-plan: development
+
+  - name: books-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host

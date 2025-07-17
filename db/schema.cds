@@ -1,53 +1,21 @@
-using { Currency, sap, managed} from '@sap/cds/common';
+using { Currency, managed, sap } from '@sap/cds/common';
+using { stocked, media } from '../srv/aspects';
 namespace sap.capire.bookshop;
 
 
-aspect media:managed  {
-    price: Integer;
-    genre: Association to Genres;
-    owner  : String  @cds.on.insert : $user.id;
-
-}
-
-annotate media with @ams.attributes: {
-    price: (price),
-    genre: (genre.name),
-    owner: (owner)
-};
- 
-annotate media with @ams.publicFields: {
-    price: (price),
-    genre: (genre.name),
-    owner: (owner)
-
-};
- 
-
-@restrict: [
-    { grant: ['CREATE'], to: 'authenticated-user'  }, 
-    { grant: ['READ'],  to: 'books:read'  },
-    { grant: ['*'],  to: 'books:write'  }
-]    
-entity Books : media {
-  key ID : Integer;
+entity Books : managed, media, stocked {
+  key ID : Integer @(cds.generated);
   @mandatory title  : localized String(111);
-  descr  : localized String(1111);
-  @mandatory author : Association to Authors;
-  genre  : Association to Genres;
-  stock  : Integer;
+  author : Association to Authors;
   price  : Decimal;
   currency : Currency;
   image : LargeBinary @Core.MediaType : 'image/png';
-  
 }
-
-
 
 annotate Books with @ams.alias : 'books';
 
-
 entity Authors : managed {
-  key ID : Integer;
+  key ID : Integer @(cds.generated);
   @mandatory name   : String(111);
   dateOfBirth  : Date;
   dateOfDeath  : Date;
@@ -58,7 +26,19 @@ entity Authors : managed {
 
 /** Hierarchically organized Code List for Genres */
 entity Genres : sap.common.CodeList {
-  key ID   : Integer;
+  key ID   : Integer @(cds.generated);
   parent   : Association to Genres;
   children : Composition of many Genres on children.parent = $self;
+}
+
+
+entity Orders {
+  key ID: Integer;
+  Items : Composition of many OrderItems;
+  buyer : String;
+}
+aspect OrderItems {
+  key pos : Integer;
+  product : Association to Books;
+  quantity : Integer;
 }

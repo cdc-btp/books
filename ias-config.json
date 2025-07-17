@@ -1,49 +1,78 @@
-{       
-
-  "display-name": "Books Identity (${org}-${space})`",
+{
+  "name": "ias-cdc-idp",
+  
   "authorization": {
     "enabled": true,
-    "value_help_url": "https://ams-dev-books-srv.cfapps.eu20-001.hana.ondemand.com/odata/v4/ValueHelpService/",
-    "show_in_consuming_app": true
-  },
-  "provided-apis": [
-    {
-      "name": "books-api",
-      "description": "api exposed by books app"
-    }
-  ],
-  "subject-name-identifier": {
-    "attribute": "email",
-    "fallback-attribute": "Email"
-  },
+    "show_in_consuming_app": true,
+    "product_label": "ias-cdc-idp"
 
-  "oauth2-configuration": {
+  },
+  "oauth2-configuration": { 
     "public-client": true,
-    "grant-types": ["authorization_code", "urn:ietf:params:oauth:grant-type:jwt-bearer", "refresh_token", "urn:ietf:params:oauth:grant-type:token-exchange", "client_credentials", "implicit", "password"],
-    "credential-types": ["binding-secret", "x509"],
-    
+    "front-channel-logout-uris": ["https://books-cdc.cfapps.sap.hana.ondemand.com/fc-logout"],
+    "back-channel-logout-uris": ["https://books-cdc.cfapps.sap.hana.ondemand.com/bc-logout"],
     "redirect-uris": [
-      "https://*.cfapps.eu20.hana.ondemand.com/login/callback?authType=ias",
-      "https://*.cfapps.eu20-001.hana.ondemand.com/login/callback?authType=ias",
+      "https://*.cfapps.eu12.hana.ondemand.com/login/callback?authType=ias",
+      "https://*.cfapps.eu12001.hana.ondemand.com/login/callback?authType=ias",
       "http://localhost:4004/login/callback?authType=ias",
       "http://localhost:4005/login/callback?authType=ias"
     ],  
     "post-logout-redirect-uris": [
-      "https://*.cfapps.eu20.hana.ondemand.com/*/logout.html" ,
-      "https://*.cfapps.eu20-001.hana.ondemand.com/*/logout.html"
-    ]  
+      "https://*.cfapps.eu12.hana.ondemand.com/*/logout.html" ,
+      "https://*.cfapps.eu12-001.hana.ondemand.com/*/logout.html"
+    ],  
+    "token-policy": {
+      "token-validity": 1800,
+      "refresh-validity": 7776000,
+      "refresh-parallel": 3,
+      "refresh-usage-after-renewal": "off",
+      "access-token-format": "jwt"
+    },
+    "grant-types": ["client_credentials", "authorization_code", "urn:ietf:params:oauth:grant-type:token-exchange", "refresh_token",   "urn:ietf:params:oauth:grant-type:jwt-bearer"]
   },
-  "xsuaa-cross-consumption":true,
-  "multi-tenant":false,
-  "identity-providers": [
-    {
-      "name": " gid.pyzlo.com",
-      "description": "SAP CDC Identity Provider",
-      "identity-provider-type": "ias",
-      "display-name": "SAP CDC Identity Provider"
-      
-    }
-  ]
 
+  "xsuaa-cross-consumption": true,
+  "display-name": "Test Identity - CDC & IAS",
+  "home-url": "https://din-books-router.cfapps.eu12.hana.ondemand.com",
+  "multi-tenant": true,
+  "user-access": "public",
+  "catalog": {
+    "services": [
+      {
+        "name": "books-api",
+        "plans": [
+          {
+            "name": "standard"
+          }
+        ]
+      }
+    ]
+  },
+  "provided-apis": [
+    {
+      "name": "books-api",
+      "description": "grants access to write APIs",
+      "type": "public"
+    },
+    {
+      "name": "books-dashboard",
+      "description": "grants access to books dashboard",
+      "type": "public"
+    }
+  ],
+  "subject-name-identifier":{
+    "attribute": "${corporateIdP.email}"
+  },
+
+  "default-attributes": { 
+    "app_att": "567" , 
+    "email": "${corporateIdP.email}",
+    "family_name": "${corporateIdP.family_name}",
+    "given_name": "${corporateIdP.given_name}",
+    "groups": "${corporateIdP.groups}",
+    "user_uuid": "${corporateIdP.sub}"
+  }, 
+  "blank-attribute-names": ["predefined-attribute"]
+   
 
 }

@@ -3,12 +3,6 @@
  "authenticationMethod": "route",
  "routes": [
   {
-   "source": "^/sap/ui5/1(.*)$",
-   "target": "$1",
-   "destination": "ui5",
-   "csrfProtection": false
-  }, 
-  {
    "source": "^/app/(.*)$",
    "target": "$1",
    "localDir": ".",
@@ -22,25 +16,60 @@
   {
    "source": "^/user-api(.*)",
    "target": "$1",
+   "authenticationType": "ias",
+   "csrfProtection": false,
    "service": "sap-approuter-userapi"
   },
   {
    "source": "^/user/me$",
    "target": "/currentUser",
+   "authenticationType": "ias",
+   "csrfProtection": false,
    "service": "sap-approuter-userapi"
   },
   {
-   "source": "^/api/(.*)$",
-   "target": "/odata/v4/$1",
-   "destination": "srv-api",
+   "source": "^/api/admin/(.*)$",
+   "target": "/admin/$1",
+   "destination": "books-api",
    "authenticationType": "ias",
    "csrfProtection": false
-  }, 
+  },
   {
-   "source": "^(.*)$",
-   "target": "/vue/$1",
+   "source": "^/api/catalog/(.*)$",
+   "target": "/catalog/$1",
+   "destination": "books-api",
+   "authenticationType": "ias",
+   "csrfProtection": false
+  },
+  {
+   "source": "^/api/(.*)$",
+   "target": "/$1",
+   "destination": "books-api",
+   "authenticationType": "ias",
+   "csrfProtection": false
+  },
+  {
+   "source": "^/index.html",
+   "target": "/index.html",
    "localDir": ".",
-   "cacheControl": "no-cache, no-store, must-revalidate"
+   "cacheControl": "no-cache, no-store, must-revalidate",
+   "csrfProtection": false,
+   "authenticationType": "ias"
+
+  },
+  {
+   "source": "^/app.js",
+   "target": "/app.js",
+   "localDir": ".",
+   "cacheControl": "no-cache, no-store, must-revalidate",
+   "csrfProtection": false
+  },
+  {
+   "source": "^/admin.html",
+   "target": "/admin.html",
+   "localDir": ".",
+   "cacheControl": "no-cache, no-store, must-revalidate",
+   "csrfProtection": false
   }
  ],
  "login": {
@@ -58,4 +87,3 @@
   }
  }
 }
-  

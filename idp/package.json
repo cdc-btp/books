@@ -1,0 +1,32 @@
+{
+  "name": "idp-deployer",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "bin": "./dist/index.cjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": " pkgroll --src .  -o dist  ",
+    "cds:dev":"DEBUG=ias cds bind --profile hybrid --exec -- node index.js ",
+
+    "cds:start":"DEBUG=ias cds bind --profile hybrid --exec -- npm start ",
+    "start": "node dist/index.cjs",
+    "cds-build": "cds build",
+    "cds-deploy": "cds deploy"
+
+  },
+  "dependencies": {
+    "@sap/cds": "^8.9.4",
+    "@sap/cds-dk": "^8.9.4",
+
+    "@sap-cloud-sdk/http-client": "^3.26.4"
+  },
+   "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "pkgroll": "^2.14.1"
+  }
+   
+}
