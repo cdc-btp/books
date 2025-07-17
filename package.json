@@ -40,7 +40,7 @@
     "build": "rm -rf resources mta_archives && mbt build --mtar archive",
     "build:ias-idp": "mbt build -s ias_idp_deploy.mta.yml --mtar=ias-idp.mtar",
     "deploy:ias-idp": "cf deploy -m idp-deployer -r books-ias-cdc",
-    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase -f",
+    "deploy": "cf deploy mta_archives/archive.mtar  --retries 1 --no-restart-subscribed-apps --skip-testing-phase --delete-services=false -f",
     "build:security": "cds compile srv --to xsuaa > xs-security.json",
     "delete-flags": "--delete-services --delete-service-keys  --delete-service-brokers",
     "debug": "DEBUG=ams,ams-dev cds w",

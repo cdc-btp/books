@@ -10,7 +10,7 @@ GET {{server}}/admin/Books
 
 ### Books
 # @name Books_POST
-POST {{server}}/odata/v4/admin/Books
+POST {{server}}//admin/Books
 Content-Type: application/json
 {{auth}}
 
@@ -36,7 +36,7 @@ Content-Type: application/json
 
 ### Books
 # @name Books_PATCH
-PATCH {{server}}/odata/v4/admin/Books/3345241
+PATCH {{server}}//admin/Books/3345241
 Content-Type: application/json
 {{auth}}
 
@@ -62,20 +62,20 @@ Content-Type: application/json
 
 ### Books
 # @name Books_DELETE
-DELETE {{server}}/odata/v4/admin/Books/3345241
+DELETE {{server}}//admin/Books/3345241
 Content-Type: application/json
 {{auth}}
 
 
 ### Authors
 # @name Authors_GET
-GET {{server}}/odata/v4/admin/Authors
+GET {{server}}//admin/Authors
 {{auth}}
 
 
 ### Authors
 # @name Authors_POST
-POST {{server}}/odata/v4/admin/Authors
+POST {{server}}//admin/Authors
 Content-Type: application/json
 {{auth}}
 
@@ -95,7 +95,7 @@ Content-Type: application/json
 
 ### Authors
 # @name Authors_PATCH
-PATCH {{server}}/odata/v4/admin/Authors/11375660
+PATCH {{server}}//admin/Authors/11375660
 Content-Type: application/json
 {{auth}}
 
@@ -115,20 +115,20 @@ Content-Type: application/json
 
 ### Authors
 # @name Authors_DELETE
-DELETE {{server}}/odata/v4/admin/Authors/11375660
+DELETE {{server}}//admin/Authors/11375660
 Content-Type: application/json
 {{auth}}
 
 
 ### MyBooks
 # @name MyBooks_GET
-GET {{server}}/odata/v4/admin/MyBooks
+GET {{server}}//admin/MyBooks
 {{auth}}
 
 
 ### MyBooks
 # @name MyBooks_POST
-POST {{server}}/odata/v4/admin/MyBooks
+POST {{server}}//admin/MyBooks
 Content-Type: application/json
 {{auth}}
 
@@ -144,7 +144,7 @@ Content-Type: application/json
 
 ### MyBooks
 # @name MyBooks_PATCH
-PATCH {{server}}/odata/v4/admin/MyBooks/27907567
+PATCH {{server}}//admin/MyBooks/27907567
 Content-Type: application/json
 {{auth}}
 
@@ -160,20 +160,20 @@ Content-Type: application/json
 
 ### MyBooks
 # @name MyBooks_DELETE
-DELETE {{server}}/odata/v4/admin/MyBooks/27907567
+DELETE {{server}}//admin/MyBooks/27907567
 Content-Type: application/json
 {{auth}}
 
 
 ### Genres
 # @name Genres_GET
-GET {{server}}/odata/v4/admin/Genres
+GET {{server}}//admin/Genres
 {{auth}}
 
 
 ### Genres
 # @name Genres_POST
-POST {{server}}/odata/v4/admin/Genres
+POST {{server}}//admin/Genres
 Content-Type: application/json
 {{auth}}
 
@@ -188,7 +188,7 @@ Content-Type: application/json
 
 ### Genres
 # @name Genres_PATCH
-PATCH {{server}}/odata/v4/admin/Genres/7710727
+PATCH {{server}}//admin/Genres/7710727
 Content-Type: application/json
 {{auth}}
 
@@ -203,6 +203,6 @@ Content-Type: application/json
 
 ### Genres
 # @name Genres_DELETE
-DELETE {{server}}/odata/v4/admin/Genres/7710727
+DELETE {{server}}//admin/Genres/7710727
 Content-Type: application/json
 {{auth}}

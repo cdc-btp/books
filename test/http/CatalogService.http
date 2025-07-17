@@ -4,31 +4,31 @@
 
 ### ListOfBooks
 # @name ListOfBooks_GET
-GET {{server}}/odata/v4/catalog/ListOfBooks
+GET {{server}}/catalog/ListOfBooks
 {{auth}}
 
 
 ### Books
 # @name Books_GET
-GET {{server}}/odata/v4/catalog/Books
+GET {{server}}//catalog/Books
 {{auth}}
 
 
 ### MyBooks
 # @name MyBooks_GET
-GET {{server}}/odata/v4/catalog/MyBooks
+GET {{server}}/catalog/MyBooks
 {{auth}}
 
 
 ### Genres
 # @name Genres_GET
-GET {{server}}/odata/v4/catalog/Genres
+GET {{server}}//catalog/Genres
 {{auth}}
 
 
 ### Genres
 # @name Genres_POST
-POST {{server}}/odata/v4/catalog/Genres
+POST {{server}}//catalog/Genres
 Content-Type: application/json
 {{auth}}
 
@@ -43,7 +43,7 @@ Content-Type: application/json
 
 ### Genres
 # @name Genres_PATCH
-PATCH {{server}}/odata/v4/catalog/Genres/22059107
+PATCH {{server}}//catalog/Genres/22059107
 Content-Type: application/json
 {{auth}}
 
@@ -58,18 +58,75 @@ Content-Type: application/json
 
 ### Genres
 # @name Genres_DELETE
-DELETE {{server}}/odata/v4/catalog/Genres/22059107
+DELETE {{server}}//catalog/Genres/22059107
 Content-Type: application/json
 {{auth}}
 
 
 ### submitOrder
 # @name submitOrder_POST
-POST {{server}}/odata/v4/catalog/submitOrder
+POST {{server}}/catalog/submitOrder
 Content-Type: application/json
 {{auth}}
 
 {
+  "book": 201,
+  "quantity": 1
+}
+
+### MyOrders - Get user orders
+# @name MyOrders_GET
+GET {{server}}/my-orders/Order?$expand=Items($expand=product)
+{{auth}}
+
+### MyOrders - Get user orders with bob
+# @name MyOrders_bob_GET
+GET {{server}}//catalog/MyOrders/Order?$expand=Items($expand=product)
+Authorization: Basic bob:
+
+### MyOrders - Get user orders with carol
+# @name MyOrders_carol_GET
+GET {{server}}//catalog/MyOrders/Order?$expand=Items($expand=product)
+Authorization: Basic carol:
+
+### MyOrders - Get user orders with dave
+# @name MyOrders_dave_GET
+GET {{server}}//catalog/MyOrders/Order?$expand=Items($expand=product)
+Authorization: Basic dave:
+
+### MyOrders - Get user orders with erin
+# @name MyOrders_erin_GET
+GET {{server}}//catalog/MyOrders/Order?$expand=Items($expand=product)
+Authorization: Basic erin:
+
+### MyOrders - Get user orders with fred
+# @name MyOrders_fred_GET
+GET {{server}}//catalog/MyOrders/Order?$expand=Items($expand=product)
+Authorization: Basic fred:
+
+### MyOrders - Get Products
+# @name MyOrders_Products_GET
+GET {{server}}//catalog/MyOrders/Product
+{{auth}}
+
+### Submit order with bob
+# @name submitOrder_bob_POST
+POST {{server}}//catalog/submitOrder
+Content-Type: application/json
+Authorization: Basic bob:
+
+{
   "book": 4615287,
-  "quantity": 0
+  "quantity": 2
+}
+
+### Submit order with carol
+# @name submitOrder_carol_POST
+POST {{server}}//catalog/submitOrder
+Content-Type: application/json
+Authorization: Basic carol:
+
+{
+  "book": 4615287,
+  "quantity": 1
 }
